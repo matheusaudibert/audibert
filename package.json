@@ -2,7 +2,7 @@
   "name": "audibert",
   "version": "1.0.0",
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node api/index.js"
   },
   "dependencies": {
     "express": "^4.17.1",

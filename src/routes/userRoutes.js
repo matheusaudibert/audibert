@@ -7,10 +7,22 @@ const { processConnectedAccounts, processLargeImage, processSmallImage, formatTi
 
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
+  console.log(`Fetching data for user ID: ${USER_ID}`);
 
   try {
     const guild = client.guilds.cache.get(config.GUILD_ID);
+    if (!guild) {
+      console.error('Guild not found');
+      return res.status(500).json({ error: 'Guild not found' });
+    }
+
     const member = await guild.members.fetch(USER_ID);
+    if (!member) {
+      console.error('Member not found');
+      return res.status(500).json({ error: 'Member not found' });
+    }
+
+    console.log(`Member found: ${member.user.username}`);
 
     fetch(`https://discord.com/api/v10/users/${USER_ID}/profile`, {
       method: "GET",
@@ -18,6 +30,8 @@ router.get('/:id', async (req, res) => {
     })
       .then(response => response.json())
       .then(data => {
+        console.log('Data fetched from Discord API:', data);
+
         const profileInfo = {
           id: data.user.id,
           username: data.user.username,
@@ -109,9 +123,14 @@ router.get('/:id', async (req, res) => {
         };
 
         res.json(ApiJSON);
+      })
+      .catch(err => {
+        console.error('Error fetching data from Discord API:', err);
+        res.status(500).json({ error: 'Error fetching data from Discord API' });
       });
 
   } catch (error) {
+    console.error('Error processing request:', error);
     res.status(500).json({
       error: {
         code: 'user_not_monitored',
