@@ -5,7 +5,7 @@ const client = require('../services/discordClient');
 const config = require('../config/config');
 const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime } = require('../utils/activityProcessor');
 
-router.get('/user/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
 
   try {
