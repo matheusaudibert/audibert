@@ -10,19 +10,6 @@ router.get('/:id', async (req, res) => {
   console.log(`Fetching data for user ID: ${USER_ID}`);
 
   try {
-    const guild = client.guilds.cache.get(config.GUILD_ID);
-    if (!guild) {
-      console.error('Guild not found');
-      return res.status(500).json({ error: 'Guild not found' });
-    }
-
-    const member = await guild.members.fetch(USER_ID);
-    if (!member) {
-      console.error('Member not found');
-      return res.status(500).json({ error: 'Member not found' });
-    }
-
-    console.log(`Member found: ${member.user.username}`);
 
     fetch(`https://discord.com/api/v10/users/${USER_ID}/profile`, {
       method: "GET",
