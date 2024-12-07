@@ -1,10 +1,10 @@
 const express = require('express');
-const config = require('../src/config/config');
-const userRoutes = require('../src/routes/userRoutes');
+const config = require('./config/config');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
-app.use('/user', userRoutes);
+app.use('/api.audibert', userRoutes);
 
 app.use('*', (req, res) => {
   res.status(404).json({
@@ -18,5 +18,3 @@ app.use('*', (req, res) => {
 app.listen(config.PORT, () => {
   console.log(`API running on port ${config.PORT}`);
 });
-
-module.exports = app;
