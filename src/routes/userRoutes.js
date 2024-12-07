@@ -5,7 +5,7 @@ const client = require('../services/discordClient');
 const config = require('../config/config');
 const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime } = require('../utils/activityProcessor');
 
-router.get('/user/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
 
   try {
@@ -83,7 +83,7 @@ router.get('/user/:id', async (req, res) => {
               name: activity.name,
               state: activity.state || null,
               details: activity.details || null,
-              largeText: activity.assets?.largeText || null,
+              largeText: activity.assets?.largeText || "Playing",
               largeImage: processLargeImage(activity.assets?.largeImage, activity.applicationId, activity.name),
               smallText: activity.assets?.smallText || null,
               smallImage: activity.assets?.smallImage
@@ -91,21 +91,13 @@ router.get('/user/:id', async (req, res) => {
                 : null,
               timestamps: activity.timestamps?.start
                 ? {
-                  time_lapsed: (() => {
-                    const start = new Date(activity.timestamps.start);
-                    const now = new Date();
-                    const diff = now - start;
-                    const hours = Math.floor(diff / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-              
-                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                  })()
-                }
-              : null,
+                    start: new Date(activity.timestamps.start).toISOString().slice(0, 19),
+                  }
+                : null,
             };
+
             return Object.fromEntries(
-            Object.entries(rawActivity).filter(([_, value]) => value !== null)
+              Object.entries(rawActivity).filter(([_, value]) => value !== null)
             );
           });
 

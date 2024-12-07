@@ -1,0 +1,13 @@
+{
+  "name": "audibert",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "discord.js": "^14.0.0",
+    "dotenv": "^10.0.0",
+    "node-fetch": "^2.6.1"
+  }
+}

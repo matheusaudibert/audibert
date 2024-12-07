@@ -6,5 +6,5 @@ module.exports = {
   GUILD_ID: process.env.GUILD_ID,
   DISCORD_TOKEN: process.env.DISCORD_TOKEN,
   DISCORD_AUTH: process.env.DISCORD_AUTH,
-  DEFAULT_IMAGE: "https://www.pngarts.com/files/3/Logo-PNG-Image-Background.png"
+  DEFAULT_IMAGE: "https://cdn3.emoji.gg/emojis/18148-developer-badge.png"
 };

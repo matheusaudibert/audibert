@@ -4,7 +4,7 @@ const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
-app.use('/audibert.api', userRoutes);
+app.use('/user', userRoutes);
 
 app.use('*', (req, res) => {
   res.status(404).json({
@@ -16,5 +16,5 @@ app.use('*', (req, res) => {
 });
 
 app.listen(config.PORT, () => {
-  console.log(`API rodando na porta ${config.PORT}`);
+  console.log(`API running on port ${config.PORT}`);
 });

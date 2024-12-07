@@ -9,8 +9,7 @@ const client = new Client({
   ]
 });
 
-client.once('ready', () => {
-  console.log('Bot está online!');
+client.once('ready', async () => {
 });
 
 client.login(config.DISCORD_TOKEN);
