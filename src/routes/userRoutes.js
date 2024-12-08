@@ -22,6 +22,7 @@ router.get('/:id', async (req, res) => {
         const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
         const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/0.png`;
         const profileInfo = {
+          bot: data.user.bot || "false",
           id: data.user.id,
           link: `https://discord.com/users/${data.user.id}`,
           username: data.user.username,
