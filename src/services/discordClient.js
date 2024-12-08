@@ -10,6 +10,15 @@ const client = new Client({
 });
 
 client.once('ready', async () => {
+  client.user.setPresence({
+        activities: [
+            {
+                name: 'api.audibert.rest',
+                type: ActivityType.Playing,
+                url: 'https://api.audibert.rest'
+            }
+        ]
+    });
 });
 
 client.login(config.DISCORD_TOKEN);
