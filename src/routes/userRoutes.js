@@ -22,7 +22,7 @@ router.get('/:id', async (req, res) => {
         const profileInfo = {
           id: data.user.id,
           username: data.user.username,
-          display_name: data.user.display_name,
+          display_name: data.user.global_name,
           avatar: data.user.avatar,
           avatar_image: `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}`,
           avatar_decoration: data.user.avatar_decoration_data
@@ -73,7 +73,7 @@ router.get('/:id', async (req, res) => {
 
             const rawSpotify = {
               type: "Listening",
-              name: activity.name,
+              name: activity.name || null,
               song: activity.details || null,
               artist: activity.state || null,
               album: activity.assets?.largeText || null,
