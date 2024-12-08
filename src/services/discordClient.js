@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
 const config = require('../config/config');
 
 const client = new Client({
@@ -11,13 +11,12 @@ const client = new Client({
 
 client.once('ready', async () => {
   client.user.setPresence({
-        activities: [
-            {
-                name: 'api.audibert.rest',
-                type: ActivityType.Playing,
-                url: 'https://api.audibert.rest'
-            }
-        ]
+    activities: [
+        {
+            name: 'api.audibrest',
+            type: ActivityType.Playing,
+        }
+    ],
     });
 });
 
