@@ -18,15 +18,17 @@ router.get('/:id', async (req, res) => {
     })
       .then(response => response.json())
       .then(data => {
+        const avatarExtension = data.user.avatar.startsWith('a_') ? 'gif' : 'png';
         const profileInfo = {
           id: data.user.id,
           username: data.user.username,
-          display_name: data.user.global_name,
+          display_name: data.user.display_name,
           avatar: data.user.avatar,
-          avatar_decoration_data: data.user.avatar_decoration_data
+          avatar_image: `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}`,
+          avatar_decoration: data.user.avatar_decoration_data
             ? {
                 sku_id: data.user.avatar_decoration_data.sku_id,
-                asset: `https://cdn.discordapp.com/avatar-decoration-presets/${data.user.avatar_decoration_data.asset}.png`,
+                icon: `https://cdn.discordapp.com/avatar-decoration-presets/${data.user.avatar_decoration_data.asset}.png`,
               }
             : null,
           bio: data.user.bio,
@@ -34,7 +36,7 @@ router.get('/:id', async (req, res) => {
             ? {
                 identity_guild_id: data.user.clan.identity_guild_id,
                 tag: data.user.clan.tag,
-                badge: `https://cdn.discordapp.com/clan-badges/${data.user.clan.identity_guild_id}/${data.user.clan.badge}.png`
+                icon: `https://cdn.discordapp.com/clan-badges/${data.user.clan.identity_guild_id}/${data.user.clan.badge}.png`
             } 
             : null,
           badges: data.badges,
@@ -86,7 +88,7 @@ router.get('/:id', async (req, res) => {
               largeText: activity.assets?.largeText || null,
               largeImage: processLargeImage(activity.assets?.largeImage, activity.applicationId, activity.name),
               smallText: activity.assets?.smallText || null,
-              smallImage: activity.assets?.smallImage
+              smallImage_image: activity.assets?.smallImage
                 ? processSmallImage(activity.assets.smallImage, activity.applicationId)
                 : null,
               timestamps: activity.timestamps?.start
