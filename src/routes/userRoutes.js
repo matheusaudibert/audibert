@@ -28,7 +28,8 @@ router.get('/:id', async (req, res) => {
           avatar_decoration: data.user.avatar_decoration_data
             ? {
                 sku_id: data.user.avatar_decoration_data.sku_id,
-                icon: `https://cdn.discordapp.com/avatar-decoration-presets/${data.user.avatar_decoration_data.asset}.png`,
+                icon: data.user.avatar_decoration_data.asset,
+                icon_image: `https://cdn.discordapp.com/avatar-decoration-presets/${data.user.avatar_decoration_data.asset}.png`,
               }
             : null,
           bio: data.user.bio,
@@ -36,16 +37,18 @@ router.get('/:id', async (req, res) => {
             ? {
                 identity_guild_id: data.user.clan.identity_guild_id,
                 tag: data.user.clan.tag,
-                icon: `https://cdn.discordapp.com/clan-badges/${data.user.clan.identity_guild_id}/${data.user.clan.badge}.png`
+                icon: data.user.clan.badge,
+                icon_image: `https://cdn.discordapp.com/clan-badges/${data.user.clan.identity_guild_id}/${data.user.clan.badge}.png`
             } 
             : null,
-          badges: data.badges 
-            ? {
-                id: data.badges.id,
-                description: data.badges.description,
-                icon: `https://cdn.discordapp.com/badge-icons/${data.badges.icon}.png`,
-                link: data.badges.url
-            }
+          badges: data.badges
+            ? data.badges.map(badge => ({
+                id: badge.id,
+                description: badge.description,
+                icon: badge.icon,
+                icon_image: `https://cdn.discordapp.com/badges/${badge.icon}.png`,
+                link: badge.link
+              }))
             : null,
           connected_accounts: processConnectedAccounts(data.connected_accounts)
         };
