@@ -19,5 +19,4 @@ app.use('*', (req, res) => {
 });
 
 app.listen(config.PORT, () => {
-  console.log(`API running on port ${config.PORT}`);
 });
