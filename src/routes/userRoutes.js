@@ -20,13 +20,13 @@ router.get('/:id', async (req, res) => {
       .then(data => {
         const avatarExtension = data.user.avatar ? (data.user.avatar.startsWith('a_') ? 'gif' : 'png') : 'png';
         const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
-        const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/${parseInt(data.user.discriminator) % 5}.png`;
+        const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/0.png`;
         const profileInfo = {
           id: data.user.id,
           link: `https://discord.com/users/${data.user.id}`,
           username: data.user.username,
           display_name: data.user.global_name,
-          avatar: data.user.avatar || zero,
+          avatar: data.user.avatar || '0',
           avatar_image: data.user.avatar ? `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}` : defaultAvatar,
           avatar_decoration: data.user.avatar_decoration_data
             ? {
