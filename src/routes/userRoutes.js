@@ -53,13 +53,16 @@ router.get('/:id', async (req, res) => {
           connected_accounts: processConnectedAccounts(data.connected_accounts)
         };
 
+        const filteredProfileInfo = Object.fromEntries(
+          Object.entries(profileInfo).filter(([_, value]) => value !== null)
+        );
+
         const statusInfo = {
           discord_status: member.presence?.status || 'offline'
         };
 
         const activities = member.presence?.activities || [];
 
-        // Spotify JSON
         const spotifyActivity = activities
           .filter(activity => activity.name === 'Spotify')
           .map(activity => {
@@ -123,7 +126,7 @@ router.get('/:id', async (req, res) => {
 
         const ApiJSON = {
           data: {
-            profile: profileInfo,
+            profile: filteredProfileInfo,
             status: statusInfo,
             spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
             activity: Activity.length > 0 ? Activity[0] : null,
