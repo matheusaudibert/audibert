@@ -46,7 +46,7 @@ router.get('/:id', async (req, res) => {
                 id: badge.id,
                 description: badge.description,
                 icon: badge.icon,
-                icon_image: `https://cdn.discordapp.com/badges/${badge.icon}.png`,
+                icon_image: `https://cdn.discordapp.com/badge-icons/${badge.icon}.png`,
                 link: badge.link
               }))
             : null,

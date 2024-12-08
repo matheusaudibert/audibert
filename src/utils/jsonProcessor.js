@@ -6,7 +6,7 @@ const processConnectedAccounts = (accounts) => {
     let link = null;
     switch (account.type) {
       case 'reddit': link = `https://reddit.com/user/${account.name}`; break;
-      case 'tikTok': link = `https://tiktok.com/@${account.name}`; break;
+      case 'tiktok': link = `https://tiktok.com/@${account.name}`; break;
       case 'twitter': link = `https://twitter.com/${account.name}`; break;
       case 'ebay': link = `https://ebay.com/usr/${account.name}`; break;
       case 'github': link = `https://github.com/${account.name}`; break;
