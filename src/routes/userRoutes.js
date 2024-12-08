@@ -39,7 +39,14 @@ router.get('/:id', async (req, res) => {
                 icon: `https://cdn.discordapp.com/clan-badges/${data.user.clan.identity_guild_id}/${data.user.clan.badge}.png`
             } 
             : null,
-          badges: data.badges,
+          badges: data.badges 
+            ? {
+                id: data.badges.id,
+                description: data.badges.description,
+                icon: `https://cdn.discordapp.com/badge-icons/${data.badges.id}.png`,
+                link: data.badges.url
+            }
+            : null,
           connected_accounts: processConnectedAccounts(data.connected_accounts)
         };
 
