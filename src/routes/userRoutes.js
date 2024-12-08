@@ -43,7 +43,7 @@ router.get('/:id', async (req, res) => {
             ? {
                 id: data.badges.id,
                 description: data.badges.description,
-                icon: `https://cdn.discordapp.com/badge-icons/${data.badges.id}.png`,
+                icon: `https://cdn.discordapp.com/badge-icons/${data.badges.icon}.png`,
                 link: data.badges.url
             }
             : null,
