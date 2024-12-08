@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const client = require('../services/discordClient');
 const config = require('../config/config');
-const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime } = require('../utils/jsonProcessor');
+const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime } = require('../utils/jsonProcessor
 
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
