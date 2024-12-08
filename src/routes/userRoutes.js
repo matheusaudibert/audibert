@@ -81,7 +81,7 @@ router.get('/:id', async (req, res) => {
               type: "Listening",
               name: activity.name,
               song: activity.details || null,
-              artist: activity.state ? activity.state.replace(/;/g, ',') : null, // Substituir todas as ocorrências de ';' por ','
+              artist: activity.state ? activity.state.replace(/;/g, ',') : null,
               album: activity.assets?.largeText || null,
               album_image: activity.assets?.largeImage?.replace('spotify:', 'https://i.scdn.co/image/') || null,
               link: `https://open.spotify.com/track/${activity.syncId}` || null,
