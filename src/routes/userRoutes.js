@@ -18,13 +18,16 @@ router.get('/:id', async (req, res) => {
     })
       .then(response => response.json())
       .then(data => {
-        const avatarExtension = data.user.avatar.startsWith('a_') ? 'gif' : 'png';
+        const avatarExtension = data.user.avatar ? (data.user.avatar.startsWith('a_') ? 'gif' : 'png') : 'png';
+        const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
+        const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/${parseInt(data.user.discriminator) % 5}.png`;
         const profileInfo = {
           id: data.user.id,
+          link: `https://discord.com/users/${data.user.id}`,
           username: data.user.username,
           display_name: data.user.global_name,
-          avatar: data.user.avatar,
-          avatar_image: `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}`,
+          avatar: data.user.avatar || zero,
+          avatar_image: data.user.avatar ? `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}` : defaultAvatar,
           avatar_decoration: data.user.avatar_decoration_data
             ? {
                 sku_id: data.user.avatar_decoration_data.sku_id,
@@ -32,6 +35,8 @@ router.get('/:id', async (req, res) => {
                 icon_image: `https://cdn.discordapp.com/avatar-decoration-presets/${data.user.avatar_decoration_data.asset}.png`,
               }
             : null,
+          banner: data.user.banner,
+          banner_image: data.user.banner ? `https://cdn.discordapp.com/banners/${data.user.id}/${data.user.banner}.${bannerExtension}` : null,
           bio: data.user.bio,
           clan: data.user.clan
             ? {
@@ -39,7 +44,7 @@ router.get('/:id', async (req, res) => {
                 tag: data.user.clan.tag,
                 icon: data.user.clan.badge,
                 icon_image: `https://cdn.discordapp.com/clan-badges/${data.user.clan.identity_guild_id}/${data.user.clan.badge}.png`
-            } 
+              }
             : null,
           badges: data.badges
             ? data.badges.map(badge => ({
@@ -53,6 +58,7 @@ router.get('/:id', async (req, res) => {
           connected_accounts: processConnectedAccounts(data.connected_accounts)
         };
 
+        // Remover campos nulos do objeto profileInfo
         const filteredProfileInfo = Object.fromEntries(
           Object.entries(profileInfo).filter(([_, value]) => value !== null)
         );
@@ -73,9 +79,9 @@ router.get('/:id', async (req, res) => {
 
             const rawSpotify = {
               type: "Listening",
-              name: activity.name || null,
+              name: activity.name,
               song: activity.details || null,
-              artist: activity.state || null,
+              artist: activity.state ? activity.state.replace(/;/g, ',') : null, // Substituir todas as ocorrências de ';' por ','
               album: activity.assets?.largeText || null,
               album_image: activity.assets?.largeImage?.replace('spotify:', 'https://i.scdn.co/image/') || null,
               link: `https://open.spotify.com/track/${activity.syncId}` || null,
@@ -101,42 +107,44 @@ router.get('/:id', async (req, res) => {
               largeText: activity.assets?.largeText || null,
               largeImage: processLargeImage(activity.assets?.largeImage, activity.applicationId, activity.name),
               smallText: activity.assets?.smallText || null,
-              smallImage_image: activity.assets?.smallImage
+              smallImage: activity.assets?.smallImage
                 ? processSmallImage(activity.assets.smallImage, activity.applicationId)
                 : null,
               timestamps: activity.timestamps?.start
                 ? {
-                  time_lapsed: (() => {
-                    const start = new Date(activity.timestamps.start);
-                    const now = new Date();
-                    const diff = now - start;
-                    const hours = Math.floor(diff / (1000 * 60 * 60));
-                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-              
-                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                  })()
-                }
-              : null,
+                    time_lapsed: (() => {
+                      const start = new Date(activity.timestamps.start);
+                      const now = new Date();
+                      const diff = now - start;
+                      const hours = Math.floor(diff / (1000 * 60 * 60));
+                      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    })()
+                  }
+                : null,
             };
             return Object.fromEntries(
-            Object.entries(rawActivity).filter(([_, value]) => value !== null)
+              Object.entries(rawActivity).filter(([_, value]) => value !== null)
             );
           });
 
         const ApiJSON = {
-          data: {
-            profile: filteredProfileInfo,
-            status: statusInfo,
-            spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
-            activity: Activity.length > 0 ? Activity[0] : null,
-          }
+          profile: filteredProfileInfo,
+          status: statusInfo,
+          spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
+          activity: Activity.length > 0 ? Activity[0] : null,
         };
 
         res.json(ApiJSON);
+      })
+      .catch(err => {
+        console.error('Error fetching data from Discord API:', err);
+        res.status(500).json({ error: 'Error fetching data from Discord API' });
       });
 
   } catch (error) {
+    console.error('Error processing request:', error);
     res.status(500).json({
       error: {
         code: 'user_not_monitored',
