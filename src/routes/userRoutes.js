@@ -131,10 +131,12 @@ router.get('/:id', async (req, res) => {
           });
 
         const ApiJSON = {
-          profile: filteredProfileInfo,
-          status: statusInfo,
-          spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
-          activity: Activity.length > 0 ? Activity[0] : null,
+          data: {
+            profile: filteredProfileInfo,
+            status: statusInfo,
+            spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
+            activity: Activity.length > 0 ? Activity[0] : null
+          }
         };
 
         res.json(ApiJSON);
