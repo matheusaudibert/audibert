@@ -13,7 +13,7 @@ client.once('ready', async () => {
   client.user.setPresence({
     activities: [
         {
-            name: 'api.audibrest',
+            name: 'api.audibert.rest/user/',
             type: ActivityType.Playing,
         }
     ],
