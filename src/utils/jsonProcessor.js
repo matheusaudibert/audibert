@@ -1,6 +1,23 @@
 const config = require('../config/config');
 const defaultImages = require('../config/defaultImages');
 
+function getAccountCreationDate(userId) {
+  const DISCORD_EPOCH = 1420070400000; // Data de início do Discord: 1º de janeiro de 2015
+  const timestamp = BigInt(userId) >> 22n; // Obtém o timestamp em milissegundos
+  const creationDate = new Date(Number(timestamp) + DISCORD_EPOCH);
+
+  // Formatar a data no estilo "Aug,16 2024"
+  const formattedDate = creationDate.toLocaleDateString('en-US', {
+    month: 'short',  // Abreviação do mês
+    day: '2-digit',  // Dia com dois dígitos
+    year: 'numeric', // Ano completo
+  });
+
+  return formattedDate.replace(', ', ', '); // Ajusta para "Aug, 16 2024"
+}
+
+
+
 const processConnectedAccounts = (accounts) => {
   return accounts.map(account => {
     let link = null;
@@ -64,6 +81,7 @@ const processSmallImage = (image, applicationId) => {
 };
 
 module.exports = {
+  getAccountCreationDate,
   processLargeImage,
   processSmallImage,
   processConnectedAccounts,

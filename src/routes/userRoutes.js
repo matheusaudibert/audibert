@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const client = require('../services/discordClient');
 const config = require('../config/config');
-const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime } = require('../utils/jsonProcessor');
+const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate} = require('../utils/jsonProcessor');
 
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
@@ -23,6 +23,7 @@ router.get('/:id', async (req, res) => {
       const profileInfo = {
         bot: data.user.bot || "false",
         id: data.user.id,
+        member_since: getAccountCreationDate(data.user.id),
         link: `https://discord.com/users/${data.user.id}`,
         username: data.user.username,
         display_name: data.user.global_name,
@@ -76,7 +77,7 @@ router.get('/:id', async (req, res) => {
           const progress = now - start;
 
           const rawSpotify = {
-            type: "Listening",
+            type: "Listening to Spotify",
             name: activity.name,
             song: activity.details || null,
             artist: activity.state ? activity.state.replace(/;/g, ',') : null,
