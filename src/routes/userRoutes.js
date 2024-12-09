@@ -136,7 +136,8 @@ router.get('/:id', async (req, res) => {
           profile: filteredProfileInfo,
           status: statusInfo,
           spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
-          activity: Activity.length > 0 ? Activity.reverse() : null
+          activity: Activity.length > 0 ? Activity.reverse() : null,
+          success: true
         }
       };
 
@@ -148,7 +149,8 @@ router.get('/:id', async (req, res) => {
         code: 'user_not_monitored',
         message: 'User is not being monitored by audibert',
         server: 'https://discord.gg/6aQZYRUs'
-      }
+      },
+      success: false
     });
   }
 });
