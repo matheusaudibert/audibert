@@ -37,7 +37,7 @@ router.get('/:id', async (req, res) => {
           : null,
         banner: data.user.banner,
         banner_image: data.user.banner ? `https://cdn.discordapp.com/banners/${data.user.id}/${data.user.banner}.${bannerExtension}` : null,
-        bio: data.user.bio,
+        bio: data.user.bio || null,
         clan: data.user.clan
           ? {
               identity_guild_id: data.user.clan.identity_guild_id,
