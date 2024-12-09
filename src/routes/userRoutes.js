@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const client = require('../services/discordClient');
 const config = require('../config/config');
-const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate} = require('../utils/jsonProcessor');
+const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate } = require('../utils/jsonProcessor');
 
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
@@ -16,7 +16,8 @@ router.get('/:id', async (req, res) => {
       method: "GET",
       headers: { "authorization": config.DISCORD_AUTH }
     })
-    .then(response => response.json()).then(data => {
+    .then(response => response.json())
+    .then(data => {
       const avatarExtension = data.user.avatar ? (data.user.avatar.startsWith('a_') ? 'gif' : 'png') : 'png';
       const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
       const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/0.png`;
@@ -70,7 +71,8 @@ router.get('/:id', async (req, res) => {
       const activities = member.presence?.activities || [];
 
       const spotifyActivity = activities
-        .filter(activity => activity.name === 'Spotify').map(activity => {
+        .filter(activity => activity.name === 'Spotify')
+        .map(activity => {
           const now = Date.now();
           const start = activity.timestamps?.start || now;
           const end = activity.timestamps?.end || now;
@@ -123,6 +125,7 @@ router.get('/:id', async (req, res) => {
                 }
               : null,
           };
+
           return Object.fromEntries(
             Object.entries(rawActivity).filter(([_, value]) => value !== null)
           );
@@ -133,7 +136,7 @@ router.get('/:id', async (req, res) => {
           profile: filteredProfileInfo,
           status: statusInfo,
           spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
-          activity: Activity.length > 0 ? Activity[0] : null
+          activity: Activity.length > 0 ? Activity.reverse() : null
         }
       };
 
