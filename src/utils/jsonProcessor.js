@@ -16,8 +16,6 @@ function getAccountCreationDate(userId) {
   return formattedDate.replace(', ', ', '); // Ajusta para "Aug, 16 2024"
 }
 
-
-
 const processConnectedAccounts = (accounts) => {
   return accounts.map(account => {
     let link = null;
