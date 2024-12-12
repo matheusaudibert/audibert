@@ -46,7 +46,7 @@ router.get('/:id', async (req, res) => {
         link: `https://discord.com/users/${data.user.id}`,
         avatar: data.user.avatar || '0',
         avatar_image: avatar_image,
-        color: color,
+        avatr_color: color,
         avatar_decoration: data.user.avatar_decoration_data
           ? {
               sku_id: data.user.avatar_decoration_data.sku_id,
