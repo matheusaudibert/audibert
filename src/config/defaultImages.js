@@ -20,4 +20,7 @@ module.exports = {
   "Rocket League": {
     largeImage: "https://cdn.discordapp.com/app-icons/356877880938070016/a74899a5190c48a3e6ce9f8d2eaff348.png",
   },
+  "Geand Theft Auto V": {
+    largeImage: "https://cdn.discordapp.com/app-icons/356876176465199104/069d9f4871b5ebd2f62bd342ce6ba77f.webp?size=160&keep_aspect_ratio=false",
+  },
 };
