@@ -5,6 +5,12 @@ const client = require('../services/discordClient');
 const config = require('../config/config');
 const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate } = require('../utils/jsonProcessor');
 
+app.use((req, res, next) => {
+  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  console.log(`IP acessando a URL: ${ip}`);
+  next();
+});
+
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
 
@@ -18,16 +24,22 @@ router.get('/:id', async (req, res) => {
     })
     .then(response => response.json())
     .then(data => {
+
+      if (data.user.bio != null) {
+        bio = bio.replace(/\\u003C/g, '<').replace(/\\u003E/g, '>');
+      }
+
       const avatarExtension = data.user.avatar ? (data.user.avatar.startsWith('a_') ? 'gif' : 'png') : 'png';
       const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
       const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/0.png`;
       const profileInfo = {
         bot: data.user.bot || "false",
-        id: data.user.id,
-        member_since: getAccountCreationDate(data.user.id),
-        link: `https://discord.com/users/${data.user.id}`,
+        id: bio,
         username: data.user.username,
         display_name: data.user.global_name,
+        bio: data.user.bio || null,
+        member_since: getAccountCreationDate(data.user.id),
+        link: `https://discord.com/users/${data.user.id}`,
         avatar: data.user.avatar || '0',
         avatar_image: data.user.avatar ? `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}` : defaultAvatar,
         avatar_decoration: data.user.avatar_decoration_data
@@ -39,7 +51,7 @@ router.get('/:id', async (req, res) => {
           : null,
         banner: data.user.banner,
         banner_image: data.user.banner ? `https://cdn.discordapp.com/banners/${data.user.id}/${data.user.banner}.${bannerExtension}` : null,
-        bio: data.user.bio || null,
+        
         clan: data.user.clan
           ? {
               identity_guild_id: data.user.clan.identity_guild_id,
@@ -63,10 +75,6 @@ router.get('/:id', async (req, res) => {
       const filteredProfileInfo = Object.fromEntries(
         Object.entries(profileInfo).filter(([_, value]) => value !== null)
       );
-
-      const statusInfo = {
-        discord_status: member.presence?.status || 'offline'
-      };
 
       const activities = member.presence?.activities || [];
 
@@ -134,7 +142,7 @@ router.get('/:id', async (req, res) => {
       const ApiJSON = {
         data: {
           profile: filteredProfileInfo,
-          status: statusInfo,
+          status: member.presence?.status || 'offline',
           spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
           activity: Activity.length > 0 ? Activity.reverse() : null,
           success: true
