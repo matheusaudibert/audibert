@@ -27,19 +27,15 @@ router.get('/:id', async (req, res) => {
     .then(response => response.json())
     .then(data => {
 
-      if (data.user.bio != null) {
-        bio = bio.replace(/\\u003C/g, '<').replace(/\\u003E/g, '>');
-      }
-
       const avatarExtension = data.user.avatar ? (data.user.avatar.startsWith('a_') ? 'gif' : 'png') : 'png';
       const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
       const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/0.png`;
       const profileInfo = {
         bot: data.user.bot || "false",
-        id: bio,
+        id: data.user.id,
         username: data.user.username,
         display_name: data.user.global_name,
-        bio: data.user.bio || null,
+        bio: data.user.bio,
         member_since: getAccountCreationDate(data.user.id),
         link: `https://discord.com/users/${data.user.id}`,
         avatar: data.user.avatar || '0',
