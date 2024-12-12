@@ -1,19 +1,29 @@
+const { execFileSync } = require('child_process');
 const config = require('../config/config');
 const defaultImages = require('../config/defaultImages');
 
+function getDominantColor(imageUrl) {
+    try {
+        const color = execFileSync('python', ['src/utils/dominantColor.py', imageUrl], { encoding: 'utf8' });
+        return color.trim();
+    } catch (error) {
+        console.error('Erro ao executar o script Python:', error);
+        return null;
+    }
+}
+
 function getAccountCreationDate(userId) {
-  const DISCORD_EPOCH = 1420070400000; // Data de início do Discord: 1º de janeiro de 2015
-  const timestamp = BigInt(userId) >> 22n; // Obtém o timestamp em milissegundos
+  const DISCORD_EPOCH = 1420070400000;
+  const timestamp = BigInt(userId) >> 22n;
   const creationDate = new Date(Number(timestamp) + DISCORD_EPOCH);
 
-  // Formatar a data no estilo "Aug,16 2024"
   const formattedDate = creationDate.toLocaleDateString('en-US', {
-    month: 'short',  // Abreviação do mês
-    day: '2-digit',  // Dia com dois dígitos
-    year: 'numeric', // Ano completo
+    month: 'short', 
+    day: '2-digit', 
+    year: 'numeric', 
   });
 
-  return formattedDate.replace(', ', ', '); // Ajusta para "Aug, 16 2024"
+  return formattedDate.replace(', ', ', '); 
 }
 
 const processConnectedAccounts = (accounts) => {
@@ -79,6 +89,7 @@ const processSmallImage = (image, applicationId) => {
 };
 
 module.exports = {
+  getDominantColor,
   getAccountCreationDate,
   processLargeImage,
   processSmallImage,

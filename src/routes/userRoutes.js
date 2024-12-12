@@ -3,12 +3,13 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const client = require('../services/discordClient');
 const config = require('../config/config');
-const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate } = require('../utils/jsonProcessor');
+const { getDominantColor, processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate } = require('../utils/jsonProcessor');
 
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
 
   try {
+
     const guild = client.guilds.cache.get(config.GUILD_ID);
     const member = await guild.members.fetch(USER_ID);
 
@@ -22,6 +23,19 @@ router.get('/:id', async (req, res) => {
       const avatarExtension = data.user.avatar ? (data.user.avatar.startsWith('a_') ? 'gif' : 'png') : 'png';
       const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
       const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/0.png`;
+
+      avatar_image = data.user.avatar ? `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}` : defaultAvatar;
+
+      let color = null;
+
+      if(avatar_image){
+        try {  
+          color = getDominantColor(avatar_image);
+        } catch (error) {
+          color = null;
+        }
+      }
+
       const profileInfo = {
         bot: data.user.bot || "false",
         id: data.user.id,
@@ -31,7 +45,8 @@ router.get('/:id', async (req, res) => {
         member_since: getAccountCreationDate(data.user.id),
         link: `https://discord.com/users/${data.user.id}`,
         avatar: data.user.avatar || '0',
-        avatar_image: data.user.avatar ? `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}` : defaultAvatar,
+        avatar_image: avatar_image,
+        color: color,
         avatar_decoration: data.user.avatar_decoration_data
           ? {
               sku_id: data.user.avatar_decoration_data.sku_id,
