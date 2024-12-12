@@ -4,6 +4,7 @@
   "description": "Effortlessly access all your Discord data through a powerful API with just one click.",
   "main": "src/app.js",
   "scripts": {
+    "prestart": "pip install pillow",
     "start": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
