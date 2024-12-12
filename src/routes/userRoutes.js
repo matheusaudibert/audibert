@@ -5,14 +5,6 @@ const client = require('../services/discordClient');
 const config = require('../config/config');
 const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate } = require('../utils/jsonProcessor');
 
-const app = express();
-
-app.use((req, res, next) => {
-  const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  console.log(`IP acessando a URL: ${ip}`);
-  next();
-});
-
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
 
