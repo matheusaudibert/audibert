@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const client = require('../services/discordClient');
 const config = require('../config/config');
-const { getDominantColor, processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate } = require('../utils/jsonProcessor');
+const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate } = require('../utils/jsonProcessor');
 
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
@@ -26,16 +26,6 @@ router.get('/:id', async (req, res) => {
 
       avatar_image = data.user.avatar ? `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}` : defaultAvatar;
 
-      let color = null;
-
-      if(avatar_image){
-        try {  
-          color = getDominantColor(avatar_image);
-        } catch (error) {
-          color = null;
-        }
-      }
-
       const profileInfo = {
         bot: data.user.bot || "false",
         id: data.user.id,
@@ -46,7 +36,6 @@ router.get('/:id', async (req, res) => {
         link: `https://discord.com/users/${data.user.id}`,
         avatar: data.user.avatar || '0',
         avatar_image: avatar_image,
-        avatr_color: color,
         avatar_decoration: data.user.avatar_decoration_data
           ? {
               sku_id: data.user.avatar_decoration_data.sku_id,

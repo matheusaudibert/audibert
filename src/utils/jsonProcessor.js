@@ -1,16 +1,5 @@
-const { execFileSync } = require('child_process');
 const config = require('../config/config');
 const defaultImages = require('../config/defaultImages');
-
-function getDominantColor(imageUrl) {
-    try {
-        const color = execFileSync('python', ['src/utils/dominantColor.py', imageUrl], { encoding: 'utf8' });
-        return color.trim();
-    } catch (error) {
-        console.error('Erro ao executar o script Python:', error);
-        return null;
-    }
-}
 
 function getAccountCreationDate(userId) {
   const DISCORD_EPOCH = 1420070400000;
@@ -89,7 +78,6 @@ const processSmallImage = (image, applicationId) => {
 };
 
 module.exports = {
-  getDominantColor,
   getAccountCreationDate,
   processLargeImage,
   processSmallImage,
