@@ -3,15 +3,18 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const client = require('../services/discordClient');
 const config = require('../config/config');
-const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate } = require('../utils/jsonProcessor');
+const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate, checkUserInGuilds } = require('../utils/jsonProcessor');
 
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
 
   try {
 
-    const guild = client.guilds.cache.get(config.GUILD_ID);
-    const member = await guild.members.fetch(USER_ID);
+    const { isUserFound, memberGuild, member } = await checkUserInGuilds(client, USER_ID);
+
+    if (!isUserFound) {
+      throw new Error('User not found in any guilds');
+    }
 
     fetch(`https://discord.com/api/v10/users/${USER_ID}/profile`, {
       method: "GET",
@@ -150,7 +153,8 @@ router.get('/:id', async (req, res) => {
       error: {
         code: 'user_not_monitored',
         message: 'User is not being monitored by audibert',
-        server: 'https://discord.gg/6aQZYRUs'
+        official_server: 'https://discord.gg/QaHyQz34Gq',
+        invite_the_bot: ''
       },
       success: false
     });

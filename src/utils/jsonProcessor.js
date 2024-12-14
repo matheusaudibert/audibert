@@ -77,10 +77,37 @@ const processSmallImage = (image, applicationId) => {
   return null
 };
 
+const checkUserInGuilds = async (client, USER_ID) => {
+  let isUserFound = false;
+  let memberGuild = null;
+  const guildsInfo = [];
+  let member = null;
+
+  for (const [guildId, guild] of client.guilds.cache) {
+    try {
+      member = await guild.members.fetch(USER_ID);
+      if (member) {
+        isUserFound = true;
+        memberGuild = { id: guildId, name: guild.name, member: true };
+        guildsInfo.push(memberGuild);
+        break; // Se encontrado, não precisa continuar verificando
+      } else {
+        guildsInfo.push({ id: guildId, name: guild.name, member: false });
+      }
+    } catch (error) {
+      // Ignora o erro se o usuário não estiver no servidor
+      guildsInfo.push({ id: guildId, name: guild.name, member: false });
+    }
+  }
+
+  return { isUserFound, memberGuild, guildsInfo, member };
+};
+
 module.exports = {
   getAccountCreationDate,
   processLargeImage,
   processSmallImage,
   processConnectedAccounts,
-  formatTime
+  formatTime,
+  checkUserInGuilds
 };
