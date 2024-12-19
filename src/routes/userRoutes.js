@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
-const client = require('../app');
+const client = require('../services/discordClient');
 const config = require('../config/config');
 const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate, checkUserInGuilds } = require('../utils/jsonProcessor');
 
