@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
-const config = require('./config/config');
 
 const app = express();
 
@@ -18,8 +17,7 @@ app.use('*', (req, res) => {
 });
 
 app.listen(3000, () => {
-  console.log(`Server is running on port 2000`);
+  console.log(`Server is running on port 3000`);
 });
-
 
 module.exports = app;
