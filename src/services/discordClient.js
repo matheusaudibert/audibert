@@ -10,14 +10,15 @@ const client = new Client({
 });
 
 client.once('ready', async () => {
+  console.log('Bot is online!');
   client.user.setPresence({
     activities: [
-        {
-            name: 'api.audibert.rest/user/',
-            type: ActivityType.Playing,
-        }
+      {
+        name: 'api.audibert.rest/user/',
+        type: ActivityType.Playing,
+      }
     ],
-    });
+  });
 });
 
 client.login(config.DISCORD_TOKEN);

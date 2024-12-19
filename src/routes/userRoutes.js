@@ -12,6 +12,7 @@ router.get('/:id', async (req, res) => {
     const { isUserFound, member } = await checkUserInGuilds(client, USER_ID);
 
     if (!isUserFound) {
+      console.log(`User ${USER_ID} not found in any guilds`);
       throw new Error('User not found in any guilds');
     }
 
