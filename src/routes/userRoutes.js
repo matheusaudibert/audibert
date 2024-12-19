@@ -148,6 +148,7 @@ router.get('/:id', async (req, res) => {
       res.json(ApiJSON);
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
       error: {
         code: 'user_not_monitored',
