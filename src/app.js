@@ -1,7 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
-const client = require('./services/discordClient');
+const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
+const config = require('./config/config');
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildPresences,
+    GatewayIntentBits.GuildMembers
+  ]
+});
 
 const app = express();
 
@@ -17,10 +26,18 @@ app.use('*', (req, res) => {
   });
 });
 
-client.once('ready', () => {
-  app.listen(3000, () => {
-    console.log(`API is running on port 3000`);
+client.once('ready', async () => {
+  console.log('Bot is online!');
+  client.user.setPresence({
+    activities: [
+      {
+        name: 'api.audibert.rest/user/',
+        type: ActivityType.Playing,
+      }
+    ],
   });
 });
 
-module.exports = app;
+client.login(config.DISCORD_TOKEN);
+
+module.exports = app, client;
