@@ -78,29 +78,21 @@ const processSmallImage = (image, applicationId) => {
 };
 
 const checkUserInGuilds = async (client, USER_ID) => {
+  const GUILD_ID = process.env.GUILD_ID;
   let isUserFound = false;
-  let memberGuild = null;
-  const guildsInfo = [];
   let member = null;
 
-  for (const [guildId, guild] of client.guilds.cache) {
-    try {
-      member = await guild.members.fetch(USER_ID);
-      if (member) {
-        isUserFound = true;
-        memberGuild = { id: guildId, name: guild.name, member: true };
-        guildsInfo.push(memberGuild);
-        break; // Se encontrado, não precisa continuar verificando
-      } else {
-        guildsInfo.push({ id: guildId, name: guild.name, member: false });
-      }
-    } catch (error) {
-      // Ignora o erro se o usuário não estiver no servidor
-      guildsInfo.push({ id: guildId, name: guild.name, member: false });
+  try {
+    const guild = await client.guilds.fetch(GUILD_ID);
+    member = await guild.members.fetch(USER_ID);
+    if (member) {
+      isUserFound = true;
     }
+  } catch (error) {
+    // Ignora o erro se o usuário não estiver no servidor
   }
 
-  return { isUserFound, memberGuild, guildsInfo, member };
+  return { isUserFound, member };
 };
 
 module.exports = {
