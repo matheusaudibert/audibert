@@ -12,20 +12,6 @@ const client = new Client({
   ]
 });
 
-const app = express();
-
-app.use(cors());
-app.use('/user', userRoutes);
-
-app.use('*', (req, res) => {
-  res.status(404).json({
-    error: {
-      code: '404_not_found',
-      message: 'Route does not exist',
-    }
-  });
-});
-
 client.once('ready', async () => {
   console.log('Bot is online!');
   client.user.setPresence({
@@ -39,5 +25,19 @@ client.once('ready', async () => {
 });
 
 client.login(config.DISCORD_TOKEN);
+
+const app = express();
+
+app.use(cors());
+app.use('/user', userRoutes);
+
+app.use('*', (req, res) => {
+  res.status(404).json({
+    error: {
+      code: '404_not_found',
+      message: 'Route does not exist',
+    }
+  });
+});
 
 module.exports = app, client;
