@@ -9,6 +9,13 @@ router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
 
   try {
+
+    if (!client.isReady()) {
+      throw new Error('Bot não está pronto');
+    }
+
+    console.log(`Bot logado como: ${client.user.tag}`);
+    
     const { isUserFound, member } = await checkUserInGuilds(client, USER_ID);
 
     if (!isUserFound) {
