@@ -9,26 +9,25 @@ const client = new Client({
   ]
 });
 
+client.once('ready', () => {
+  console.log(`Bot inicializado: ${client.user.tag}`);
+  client.user.setPresence({
+    activities: [
+      {
+        name: 'api.audibert.rest/user/',
+        type: ActivityType.Playing,
+      }
+    ],
+  });
+});
+
+client.on('error', (error) => {
+  console.error('Erro no client:', error);
+});
+
 const initClient = async () => {
   try {
     await client.login(config.DISCORD_TOKEN);
-    
-    client.once('ready', () => {
-      console.log(`Bot inicializado: ${client.user.tag}`);
-      client.user.setPresence({
-        activities: [
-          {
-            name: 'api.audibert.rest/user/',
-            type: ActivityType.Playing,
-          }
-        ],
-      });
-    });
-
-    client.on('error', (error) => {
-      console.error('Erro no client:', error);
-    });
-
   } catch (error) {
     console.error('Erro ao fazer login:', error);
     throw error;
