@@ -1,13 +1,10 @@
 const express = require('express');
 const cors = require('cors');
-const config = require('./config/config');
 const userRoutes = require('./routes/userRoutes');
-const client = require('./services/discordClient');
 
 const app = express();
 
 app.use(cors());
-
 app.use('/user', userRoutes);
 
 app.use('*', (req, res) => {
@@ -19,6 +16,5 @@ app.use('*', (req, res) => {
   });
 });
 
-app.listen(3000, () => {
-  console.log(`API is running on port 3000`);
-});
+
+module.exports = app;
