@@ -11,6 +11,18 @@ router.get('/:id', async (req, res) => {
   try {
     const { member } = await checkUserInGuilds(client, USER_ID);
 
+    if (!member) {
+      return res.status(404).json({
+        error: {
+          code: 'user_not_monitored',
+          message: 'User is not being monitored by Audibert',
+          official_server: 'https://discord.gg/QaHyQz34Gq',
+          invite_the_bot: 'https://discord.com/oauth2/authorize?client_id=1313929822916837386'
+        },
+        success: false
+      });
+    }
+
     fetch(`https://discord.com/api/v10/users/${USER_ID}/profile`, {
       method: "GET",
       headers: { "authorization": config.DISCORD_AUTH }
@@ -144,16 +156,6 @@ router.get('/:id', async (req, res) => {
       res.json(ApiJSON);
     });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      error: {
-        code: 'user_not_monitored',
-        message: 'User is not being monitored by Audibert',
-        official_server: 'https://discord.gg/QaHyQz34Gq',
-        invite_the_bot: 'https://discord.com/oauth2/authorize?client_id=1313929822916837386'
-      },
-      success: false
-    });
   }
 });
 
