@@ -23,6 +23,8 @@ router.get('/:id', async (req, res) => {
       throw new Error('User not found in any guilds');
     }
 
+    console.log(`User ${USER_ID} found in guilds`);
+
     fetch(`https://discord.com/api/v10/users/${USER_ID}/profile`, {
       method: "GET",
       headers: { "authorization": config.DISCORD_AUTH }

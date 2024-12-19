@@ -25,15 +25,6 @@ client.on('error', (error) => {
   console.error('Erro no client:', error);
 });
 
-const initClient = async () => {
-  try {
-    await client.login(config.DISCORD_TOKEN);
-  } catch (error) {
-    console.error('Erro ao fazer login:', error);
-    throw error;
-  }
-};
-
-initClient();
+client.login(config.DISCORD_TOKEN);
 
 module.exports = client;
