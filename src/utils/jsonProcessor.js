@@ -89,7 +89,7 @@ const checkUserInGuilds = async (client, USER_ID) => {
       isUserFound = true;
     }
   } catch (error) {
-    // Ignora o erro se o usuário não estiver no servidor
+    console.log(`Error: ${error.message}`);
   }
 
   return { isUserFound, member };
