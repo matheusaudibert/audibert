@@ -89,7 +89,6 @@ const checkUserInGuilds = async (client, USER_ID) => {
       isUserFound = true;
     }
   } catch (error) {
-    console.log(`Error: ${error.message}`);
   }
 
   return { isUserFound, member };

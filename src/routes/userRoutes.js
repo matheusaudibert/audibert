@@ -9,21 +9,7 @@ router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
 
   try {
-
-    if (!client.isReady()) {
-      throw new Error('Bot não está pronto');
-    }
-
-    console.log(`Bot logado como: ${client.user.tag}`);
-    
-    const { isUserFound, member } = await checkUserInGuilds(client, USER_ID);
-
-    if (!isUserFound) {
-      console.log(`User ${USER_ID} not found in any guilds`);
-      throw new Error('User not found in any guilds');
-    }
-
-    console.log(`User ${USER_ID} found in guilds`);
+    const { member } = await checkUserInGuilds(client, USER_ID);
 
     fetch(`https://discord.com/api/v10/users/${USER_ID}/profile`, {
       method: "GET",
