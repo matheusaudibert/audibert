@@ -26,10 +26,22 @@ router.get('/:id', async (req, res) => {
       method: "GET",
       headers: { "authorization": config.DISCORD_AUTH }
     })
-    .then(response => response.json())
-    .then(data => {
+    .then((response) => {
+    // Verificar se a resposta é bem-sucedida
+    if (!response.ok) {
+      throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+    }
 
-      console.log(data)
+    // Verificar se o tipo de conteúdo é JSON
+    const contentType = response.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      throw new Error("Resposta não é JSON.");
+    }
+
+    // Processar como JSON
+    return response.json();
+  })
+    .then(data => {
 
       const avatarExtension = data.user.avatar ? (data.user.avatar.startsWith('a_') ? 'gif' : 'png') : 'png';
       const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
@@ -155,7 +167,11 @@ router.get('/:id', async (req, res) => {
       };
 
       res.json(ApiJSON);
-    });
+    })
+    .catch((err) => {
+    // Capturar e tratar erros
+    console.error("Erro ao buscar dados:", err.message);
+  });
   } catch (error) {
   }
 });
