@@ -22,7 +22,7 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    fetch(`https://discord.com/api/v10/users/${USER_ID}/profile`, {
+    fetch(`https://canary.discord.com/api/v10/users/${USER_ID}/profile`, {
       method: "GET",
       headers: { "authorization": config.DISCORD_AUTH }
     })
