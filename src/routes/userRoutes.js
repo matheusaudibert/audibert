@@ -22,12 +22,14 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    fetch(`https://discord.com/api/v10/users/${USER_ID}/profile`, {
+    fetch(`https://discord.com/api/v9/users/${USER_ID}/profile`, {
       method: "GET",
       headers: { "authorization": config.DISCORD_AUTH }
     })
     .then(response => response.json())
     .then(data => {
+
+      console.log(data)
 
       const avatarExtension = data.user.avatar ? (data.user.avatar.startsWith('a_') ? 'gif' : 'png') : 'png';
       const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
