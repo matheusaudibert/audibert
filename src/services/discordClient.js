@@ -10,11 +10,11 @@ const client = new Client({
 });
 
 client.once('ready', () => {
-  console.log(`Bot inicializado: ${client.user.tag}`);
+  console.log(`Bot on: ${client.user.tag}`);
   client.user.setPresence({
     activities: [
       {
-        name: 'api.audibert.rest/user/',
+        name: 'api.audibert.rest',
         type: ActivityType.Playing,
       }
     ],

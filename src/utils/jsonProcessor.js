@@ -1,6 +1,27 @@
 const config = require('../config/config');
 const defaultImages = require('../config/defaultImages');
 
+function getGuildCreationDate(guildId){
+  const DISCORD_EPOCH = 1420070400000;
+  const timestamp = BigInt(guildId) >> 22n;
+  const creationDate = new Date(Number(timestamp) + DISCORD_EPOCH);
+
+  return creationDate.toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric'
+  }).replace(', ', ', ');
+};
+
+function getCreation(userId) {
+  const DISCORD_EPOCH = 1420070400000;
+  const timestamp = BigInt(userId) >> 22n;
+  const creationDate = new Date(Number(timestamp) + DISCORD_EPOCH);
+
+  
+  return creationDate.toISOString();
+}
+
 function getAccountCreationDate(userId) {
   const DISCORD_EPOCH = 1420070400000;
   const timestamp = BigInt(userId) >> 22n;
@@ -95,6 +116,8 @@ const checkUserInGuilds = async (client, USER_ID) => {
 };
 
 module.exports = {
+  getGuildCreationDate,
+  getCreation,
   getAccountCreationDate,
   processLargeImage,
   processSmallImage,

@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
+const guildRoutes = require('./routes/guildRoutes');
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/user', userRoutes);
+app.use('/guild', guildRoutes);
 
 app.listen(3000, () => {
   console.log(`API is running on port 3000`);

@@ -3,7 +3,7 @@ const router = express.Router();
 const fetch = require('node-fetch');
 const client = require('../services/discordClient');
 const config = require('../config/config');
-const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate, checkUserInGuilds } = require('../utils/jsonProcessor');
+const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate, getCreation, checkUserInGuilds } = require('../utils/jsonProcessor');
 
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
@@ -27,18 +27,18 @@ router.get('/:id', async (req, res) => {
       headers: { "authorization": config.DISCORD_AUTH }
     })
     .then((response) => {
-    // Verificar se a resposta é bem-sucedida
+    
     if (!response.ok) {
       throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
     }
 
-    // Verificar se o tipo de conteúdo é JSON
+    
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
       throw new Error("Resposta não é JSON.");
     }
 
-    // Processar como JSON
+    
     return response.json();
   })
     .then(data => {
@@ -52,10 +52,11 @@ router.get('/:id', async (req, res) => {
       const profileInfo = {
         bot: data.user.bot || "false",
         id: data.user.id,
+        creation_date: getCreation(data.user.id),
+        member_since: getAccountCreationDate(data.user.id),
         username: data.user.username,
         display_name: data.user.global_name,
         bio: data.user.bio,
-        member_since: getAccountCreationDate(data.user.id),
         link: `https://discord.com/users/${data.user.id}`,
         avatar: data.user.avatar || '0',
         avatar_image: avatar_image,
@@ -162,14 +163,14 @@ router.get('/:id', async (req, res) => {
           status: member.presence?.status || 'offline',
           spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
           activity: Activity.length > 0 ? Activity.reverse() : null,
-          success: true
-        }
+        },
+        success: true
       };
 
       res.json(ApiJSON);
     })
     .catch((err) => {
-    // Capturar e tratar erros
+    
     console.error("Erro ao buscar dados:", err.message);
   });
   } catch (error) {
