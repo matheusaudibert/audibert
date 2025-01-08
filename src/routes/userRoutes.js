@@ -22,9 +22,16 @@ router.get('/:id', async (req, res) => {
       });
     }
 
+    const authTokens = [
+      process.env.DISCORD_AUTH_1,
+      process.env.DISCORD_AUTH_2,
+      process.env.DISCORD_AUTH_3
+    ];
+    const randomAuthToken = authTokens[Math.floor(Math.random() * authTokens.length)];
+    
     fetch(`https://canary.discord.com/api/v10/users/${USER_ID}/profile`, {
       method: "GET",
-      headers: { "authorization": config.DISCORD_AUTH }
+      headers: { "authorization": randomAuthToken }
     })
     .then((response) => {
       if (response.status === 429) {
