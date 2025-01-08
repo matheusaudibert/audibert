@@ -43,6 +43,8 @@ router.get('/:id', async (req, res) => {
   })
     .then(data => {
 
+      console.log(data);
+
       const avatarExtension = data.user.avatar ? (data.user.avatar.startsWith('a_') ? 'gif' : 'png') : 'png';
       const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
       const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/0.png`;

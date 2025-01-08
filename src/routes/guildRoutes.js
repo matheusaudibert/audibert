@@ -26,6 +26,18 @@ router.get('/:id', async (req, res) => {
       member.presence?.status === 'dnd'
     ).size;
 
+    const getIconUrl = (icon) => {
+      if (!icon) return null;
+      const extension = icon.startsWith('a_') ? '.gif' : '.png';
+      return `https://cdn.discordapp.com/icons/${guild.id}/${icon}${extension}`;
+    };
+
+    const getBannerUrl = (banner) => {
+      if (!banner) return null;
+      const extension = banner.startsWith('a_') ? '.gif' : '.png';
+      return `https://cdn.discordapp.com/banners/${guild.id}/${banner}${extension}`;
+    };
+
     const guildData = {
       id: guild.id,
       owner_id: guild.ownerId,
@@ -33,8 +45,8 @@ router.get('/:id', async (req, res) => {
       on_since: getGuildCreationDate(guild.id),
       name: guild.name,
       description: guild.description || null,
-      icon: guild.icon ? `https://cdn.discordapp.com/icons/${guild.id}/${guild.icon}.png` : null,
-      banner: guild.banner ? `https://cdn.discordapp.com/banners/${guild.id}/${guild.banner}.png` : null,
+      icon: getIconUrl(guild.icon),
+      banner: getBannerUrl(guild.banner),
       splash: guild.splash ? `https://cdn.discordapp.com/splashes/${guild.id}/${guild.splash}.png` : null,
       boost_count: guild.premiumSubscriptionCount,
       boost_level: guild.premiumTier,
