@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const client = require('../services/discordClient');
-const { statusEmoji, processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate, getCreation, checkUserInGuilds } = require('../utils/jsonProcessor');
+const { statusEmoji, processBio, processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate, getCreation, checkUserInGuilds } = require('../utils/jsonProcessor');
 
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
@@ -74,7 +74,7 @@ router.get('/:id', async (req, res) => {
         status: activities.find(activity => activity.name === 'Custom Status')?.state || null,
         status_emoji: statusEmoji(activities),
         pronouns: data.user_profile.pronouns || null,
-        bio: data.user.bio || null,
+        bio: processBio(data.user_profile.bio),
         link: `https://discord.com/users/${data.user.id}`,
         avatar: data.user.avatar || '0',
         avatar_image: avatar_image,

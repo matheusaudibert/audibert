@@ -12,6 +12,29 @@ function statusEmoji(activities) {
   return null;
 }
 
+function processBio(bio) {
+  if (!bio) return null;
+
+  const decodedBio = bio.replace(/\\u003C/g, '<').replace(/\\u003Ca/g, '<a').replace(/\\u003E/g, '>');
+
+  const emojiRegex = /<a:(.*?):(\d+?)>|\<(.*?):(\d+?)>/g;
+
+  const processedBio = decodedBio.replace(emojiRegex, (match, animatedName, animatedId, staticName, staticId) => {
+
+    if (animatedName && animatedId) {
+      return `https://cdn.discordapp.com/emojis/${animatedId}.webp?animated=true`;
+    }
+    else if (staticName && staticId) {
+      return `https://cdn.discordapp.com/emojis/${staticId}.webp?animated=false`;
+    }
+    return match;
+  });
+
+  return processedBio;
+}
+
+
+
 function getGuildCreationDate(guildId){
   const DISCORD_EPOCH = 1420070400000;
   const timestamp = BigInt(guildId) >> 22n;
@@ -130,6 +153,7 @@ const checkUserInGuilds = async (client, USER_ID) => {
 
 module.exports = {
   statusEmoji,
+  processBio,
   getGuildCreationDate,
   getCreation,
   getAccountCreationDate,
