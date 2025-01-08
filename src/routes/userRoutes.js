@@ -27,20 +27,27 @@ router.get('/:id', async (req, res) => {
       headers: { "authorization": config.DISCORD_AUTH }
     })
     .then((response) => {
-    
-    if (!response.ok) {
-      throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
-    }
+      if (response.status === 429) {
+        return res.status(429).json({
+          error: {
+            code: 'too_many_requests',
+            message: 'Too many requests. Please try again later.'
+          },
+          success: false
+        });
+      }
 
-    
-    const contentType = response.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      throw new Error("Resposta não é JSON.");
-    }
+      if (!response.ok) {
+        throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+      }
 
-    
-    return response.json();
-  })
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Resposta não é JSON.");
+      }
+
+      return response.json();
+    })
     .then(data => {
 
       console.log(data);
@@ -176,6 +183,7 @@ router.get('/:id', async (req, res) => {
     console.error("Erro ao buscar dados:", err.message);
   });
   } catch (error) {
+    console.error('Erro:', error);
   }
 });
 

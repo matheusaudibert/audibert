@@ -69,6 +69,16 @@ router.get('/:id', async (req, res) => {
     res.json(guildInfo);
 
   } catch (error) {
+    if (error.response && error.response.status === 429) {
+      return res.status(429).json({
+        error: {
+          code: 'too_many_requests',
+          message: 'Too many requests. Please try again later.'
+        },
+        success: false
+      });
+    }
+
     console.error('Error:', error);
     res.status(404).json({
       error: {
