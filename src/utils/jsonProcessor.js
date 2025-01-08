@@ -1,6 +1,17 @@
 const config = require('../config/config');
 const defaultImages = require('../config/defaultImages');
 
+function statusEmoji(activities) {
+  const customStatus = activities.find(activity => activity.name === 'Custom Status');
+
+  if (customStatus && customStatus.emoji) {
+    const animated = customStatus.emoji.animated ? 'true' : 'false';
+    return `https://cdn.discordapp.com/emojis/${customStatus.emoji.id}.webp?animated=${animated}`;
+  }
+
+  return null;
+}
+
 function getGuildCreationDate(guildId){
   const DISCORD_EPOCH = 1420070400000;
   const timestamp = BigInt(guildId) >> 22n;
@@ -59,10 +70,12 @@ const processConnectedAccounts = (accounts) => {
 };
 
 const formatTime = (ms) => {
+  if (ms < 0) return "00:00";
   const minutes = Math.floor(ms / 60000);
-  const seconds = ((ms % 60000) / 1000).toFixed(0);
-  return `${minutes}:${seconds.padStart(2, '0')}`;
+  const seconds = Math.floor((ms % 60000) / 1000);
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
+
 
 const processLargeImage = (image, applicationId, activityName) => {
   const defaultGame = defaultImages[activityName];
@@ -116,6 +129,7 @@ const checkUserInGuilds = async (client, USER_ID) => {
 };
 
 module.exports = {
+  statusEmoji,
   getGuildCreationDate,
   getCreation,
   getAccountCreationDate,

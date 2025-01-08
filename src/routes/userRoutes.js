@@ -2,8 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fetch = require('node-fetch');
 const client = require('../services/discordClient');
-const config = require('../config/config');
-const { processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate, getCreation, checkUserInGuilds } = require('../utils/jsonProcessor');
+const { statusEmoji, processConnectedAccounts, processLargeImage, processSmallImage, formatTime, getAccountCreationDate, getCreation, checkUserInGuilds } = require('../utils/jsonProcessor');
 
 router.get('/:id', async (req, res) => {
   const USER_ID = req.params.id;
@@ -43,19 +42,21 @@ router.get('/:id', async (req, res) => {
           success: false
         });
       }
-
+      
       if (!response.ok) {
-        throw new Error(`Erro na requisição: ${response.status} ${response.statusText}`);
+        throw new Error(response.status, response.statusText);
       }
 
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Resposta não é JSON.");
+        throw new Error("Invalid Json");
       }
 
       return response.json();
     })
     .then(data => {
+
+      const activities = member.presence?.activities || [];
 
       const avatarExtension = data.user.avatar ? (data.user.avatar.startsWith('a_') ? 'gif' : 'png') : 'png';
       const bannerExtension = data.user.banner ? (data.user.banner.startsWith('a_') ? 'gif' : 'png') : null;
@@ -70,7 +71,10 @@ router.get('/:id', async (req, res) => {
         member_since: getAccountCreationDate(data.user.id),
         username: data.user.username,
         display_name: data.user.global_name,
-        bio: data.user.bio,
+        status: activities.find(activity => activity.name === 'Custom Status')?.state || null,
+        status_emoji: statusEmoji(activities),
+        pronouns: data.user_profile.pronouns || null,
+        bio: data.user.bio || null,
         link: `https://discord.com/users/${data.user.id}`,
         avatar: data.user.avatar || '0',
         avatar_image: avatar_image,
@@ -108,15 +112,19 @@ router.get('/:id', async (req, res) => {
         Object.entries(profileInfo).filter(([_, value]) => value !== null)
       );
 
-      const activities = member.presence?.activities || [];
-
       const spotifyActivity = activities
         .filter(activity => activity.name === 'Spotify')
         .map(activity => {
           const now = Date.now();
           const start = activity.timestamps?.start || now;
           const end = activity.timestamps?.end || now;
-          const progress = now - start;
+          
+          const progress = Math.max(0, now - start);
+          const duration = Math.max(0, end - start);
+
+          const adjustedDuration = Math.floor(duration / 1000);
+          const minutes = Math.floor(adjustedDuration / 60);
+          const seconds = adjustedDuration % 60;
 
           const rawSpotify = {
             type: "Listening to Spotify",
@@ -127,8 +135,8 @@ router.get('/:id', async (req, res) => {
             album_image: activity.assets?.largeImage?.replace('spotify:', 'https://i.scdn.co/image/') || null,
             link: `https://open.spotify.com/track/${activity.syncId}` || null,
             timestamps: {
-              progress: formatTime(progress),
-              duration: formatTime(end - start),
+              progress: formatTime(Math.min(progress, duration)),
+              duration: `${minutes}:${seconds.toString().padStart(2, '0')}`,
             }
           };
 
@@ -157,10 +165,12 @@ router.get('/:id', async (req, res) => {
                     const start = new Date(activity.timestamps.start);
                     const now = new Date();
                     const diff = now - start;
+
                     const hours = Math.floor(diff / (1000 * 60 * 60));
                     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                    return `${hours > 0 ? String(hours).padStart(1, '0') + ':' : ''}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                   })()
                 }
               : null,
@@ -185,10 +195,10 @@ router.get('/:id', async (req, res) => {
     })
     .catch((err) => {
     
-    console.error("Erro ao buscar dados:", err.message);
+    console.error(err.message);
   });
   } catch (error) {
-    console.error('Erro:', error);
+    console.error(error);
   }
 });
 
