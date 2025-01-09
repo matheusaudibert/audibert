@@ -1,6 +1,23 @@
 const config = require('../config/config');
 const defaultImages = require('../config/defaultImages');
 
+const checkUserInGuilds = async (client, USER_ID) => {
+  const GUILD_ID = process.env.GUILD_ID;
+  let isUserFound = false;
+  let member = null;
+
+  try {
+    const guild = await client.guilds.fetch(GUILD_ID);
+    member = await guild.members.fetch(USER_ID);
+    if (member) {
+      isUserFound = true;
+    }
+  } catch (error) {
+  }
+
+  return { isUserFound, member };
+};
+
 function statusEmoji(activities) {
   const customStatus = activities.find(activity => activity.name === 'Custom Status');
 
@@ -32,8 +49,6 @@ function processBio(bio) {
 
   return processedBio;
 }
-
-
 
 function getGuildCreationDate(guildId){
   const DISCORD_EPOCH = 1420070400000;
@@ -134,24 +149,8 @@ const processSmallImage = (image, applicationId) => {
   return null
 };
 
-const checkUserInGuilds = async (client, USER_ID) => {
-  const GUILD_ID = process.env.GUILD_ID;
-  let isUserFound = false;
-  let member = null;
-
-  try {
-    const guild = await client.guilds.fetch(GUILD_ID);
-    member = await guild.members.fetch(USER_ID);
-    if (member) {
-      isUserFound = true;
-    }
-  } catch (error) {
-  }
-
-  return { isUserFound, member };
-};
-
 module.exports = {
+  checkUserInGuilds,
   statusEmoji,
   processBio,
   getGuildCreationDate,
@@ -161,5 +160,4 @@ module.exports = {
   processSmallImage,
   processConnectedAccounts,
   formatTime,
-  checkUserInGuilds
 };
