@@ -190,11 +190,13 @@ router.get('/:id', async (req, res) => {
                   const start = new Date(activity.timestamps.start);
                   const now = new Date();
                   const diff = now - start;
+
                   const hours = Math.floor(diff / (1000 * 60 * 60));
                   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                   const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                  return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                })()
+
+                  return `${hours > 0 ? String(hours).padStart(1, '0') + ':' : ''}${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                })(),
               }
             : null,
         };
