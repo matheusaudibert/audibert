@@ -9,7 +9,6 @@ router.get('/:id', async (req, res) => {
 
   try {
     const { member } = await checkUserInGuilds(client, USER_ID);
-    console.log(member)
 
     if (!member) {
       return res.status(404).json({
