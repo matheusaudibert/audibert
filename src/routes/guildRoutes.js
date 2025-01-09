@@ -69,14 +69,13 @@ router.get('/:id', async (req, res) => {
     res.json(guildInfo);
 
   } catch (error) {
-    console.error('Error:', error);
-    res.status(404).json({
+    console.error(error.message);
+    res.status(500).json({
       error: {
-        code: 'guild_not_found',
-        message: 'Guild not found or bot is not a member',
-        server: 'https://discord.gg/QaHyQz34Gq'
+        code: 'internal_server_error',
+        message: 'An error occurred while processing the request',
       },
-      success: false
+      success: false,
     });
   }
 });
