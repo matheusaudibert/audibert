@@ -67,6 +67,7 @@ router.get('/:id', async (req, res) => {
       const profileInfo = {
         bot: data.user.bot || "false",
         id: data.user.id,
+        link: `https://discord.com/users/${data.user.id}`,
         creation_date: getCreation(data.user.id),
         member_since: getAccountCreationDate(data.user.id),
         username: data.user.username,
@@ -75,7 +76,6 @@ router.get('/:id', async (req, res) => {
         status_emoji: statusEmoji(activities),
         pronouns: data.user_profile.pronouns || null,
         bio: processBio(data.user_profile.bio),
-        link: `https://discord.com/users/${data.user.id}`,
         avatar: data.user.avatar || '0',
         avatar_image: avatar_image,
         avatar_decoration: data.user.avatar_decoration_data
