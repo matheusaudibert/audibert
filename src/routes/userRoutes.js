@@ -137,19 +137,24 @@ router.get('/:id', async (req, res) => {
 
     const activities = member.presence?.activities || [];
 
-    const spotifyActivity = activities
+      const spotifyActivity = activities
       .filter(activity => activity.name === 'Spotify')
       .map(activity => {
         const now = Date.now();
         const start = activity.timestamps?.start || now;
         const end = activity.timestamps?.end || now;
-        
+
         const progress = Math.max(0, now - start);
         const duration = Math.max(0, end - start);
 
         const adjustedDuration = Math.floor(duration / 1000);
-        const minutes = Math.floor(adjustedDuration / 60);
+        const hours = Math.floor(adjustedDuration / 3600);
+        const minutes = Math.floor((adjustedDuration % 3600) / 60);
         const seconds = adjustedDuration % 60;
+
+        const formattedDuration = hours > 0
+          ? `${hours}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+          : `${minutes}:${String(seconds).padStart(2, '0')}`;
 
         const rawSpotify = {
           type: "Listening to Spotify",
@@ -160,9 +165,9 @@ router.get('/:id', async (req, res) => {
           album_image: activity.assets?.largeImage?.replace('spotify:', 'https://i.scdn.co/image/') || null,
           link: `https://open.spotify.com/track/${activity.syncId}` || null,
           timestamps: {
-            progress: formatTime(Math.min(progress, duration)), // Garante que o progresso nunca exceda a duração
-            duration: `${minutes}:${seconds.toString().padStart(2, '0')}`, // Garante que segundos sejam entre 0 e 59
-          }
+            progress: formatTime(Math.min(progress, duration)),
+            duration: formattedDuration,
+          },
         };
 
         return Object.fromEntries(
@@ -209,7 +214,7 @@ router.get('/:id', async (req, res) => {
     const ApiJSON = {
       data: {
         profile: filteredProfileInfo,
-        status: member.presence?.status || 'offline',
+        status: member.presence?.status || 'invisible',
         spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
         activity: Activity.length > 0 ? Activity.reverse() : null,
       },
