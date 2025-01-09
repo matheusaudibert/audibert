@@ -27,7 +27,7 @@ router.get('/:id', async (req, res) => {
       process.env.DISCORD_AUTH_3
     ];
     const randomAuthToken = authTokens[Math.floor(Math.random() * authTokens.length)];
-    
+  
     fetch(`https://canary.discord.com/api/v10/users/${USER_ID}/profile`, {
       method: "GET",
       headers: { "authorization": randomAuthToken }
