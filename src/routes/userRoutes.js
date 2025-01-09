@@ -71,7 +71,7 @@ router.get('/:id', async (req, res) => {
         creation_date: getCreation(data.user.id),
         member_since: getAccountCreationDate(data.user.id),
         username: data.user.username,
-        display_name: data.user.global_name,
+        display_name: data.user.global_name || data.user.username,
         status: activities.find(activity => activity.name === 'Custom Status')?.state || null,
         status_emoji: statusEmoji(activities),
         pronouns: data.user_profile.pronouns || null,
@@ -87,7 +87,6 @@ router.get('/:id', async (req, res) => {
           : null,
         banner: data.user.banner,
         banner_image: data.user.banner ? `https://cdn.discordapp.com/banners/${data.user.id}/${data.user.banner}.${bannerExtension}` : null,
-        
         clan: data.user.clan
           ? {
               identity_guild_id: data.user.clan.identity_guild_id,
