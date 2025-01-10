@@ -4,6 +4,7 @@ const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const guildRoutes = require('./routes/guildRoutes');
 const activityRoutes = require('./routes/quickRoutes/activityRoutes');
+const guildsRoutes = require('./routes/guildsRoutes');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
 
 app.use('/user', userRoutes);
 app.use('/guild', guildRoutes);
+app.use('/guilds', guildsRoutes);
 app.use('/activity', activityRoutes);
 
 app.listen(3000, () => {
