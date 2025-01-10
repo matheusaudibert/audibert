@@ -7,17 +7,18 @@ router.get('/:id', async (req, res) => {
   const GUILD_ID = req.params.id;
 
   try {
-    const guild = await client.guilds.fetch(GUILD_ID);
-    
-    if (!guild) {
-      return res.status(404).json({
-        error: {
-          code: 'guild_not_found',
-          message: 'Guild not found or bot is not a member',
-          invite_the_bot: 'https://api.audibert.rest',
-        },
-        success: false
-      });
+    let guild;
+    try {
+      guild = await client.guilds.fetch(GUILD_ID);
+    } catch (error) {
+        return res.status(404).json({
+          error: {
+            code: 'guild_not_found',
+            message: 'Guild not found or bot is not a member',
+            invite_the_bot: 'https://api.audibert.rest'
+          },
+          success: false
+        });
     }
 
     await guild.channels.fetch();
