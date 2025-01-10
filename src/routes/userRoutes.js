@@ -135,7 +135,10 @@ router.get('/:id', async (req, res) => {
       Object.entries(profileInfo).filter(([_, value]) => value !== null)
     );
 
-    const userStatus = member.presence?.status || 'invisible';
+    const userStatus = member.presence?.status;
+    if(userStatus === 'offline') {
+      userStatus = 'invisible';
+    }
 
     const activities = member.presence?.activities || [];
 
@@ -216,7 +219,7 @@ router.get('/:id', async (req, res) => {
     const ApiJSON = {
       data: {
         profile: filteredProfileInfo,
-        status: userStatus,
+        status: userStatus || 'invisible',
         spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
         activity: Activity.length > 0 ? Activity.reverse() : null,
       },
