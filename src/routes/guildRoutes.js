@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const client = require('../services/discordClient');
-const { getGuildCreationDate } = require('../utils/jsonProcessor');
+const { getGuildCreationDate, getEmoji} = require('../utils/jsonProcessor');
 
 router.get('/:id', async (req, res) => {
   const GUILD_ID = req.params.id;
@@ -62,9 +62,11 @@ router.get('/:id', async (req, res) => {
       boost_count: guild.premiumSubscriptionCount,
       boost_level: guild.premiumTier,
       community: guild.features.includes('COMMUNITY'),
+      discoverable: guild.features.includes('DISCOVERABLE'),
       verified: guild.verified,
       member_count: guild.memberCount,
       member_online_count: onlineMembers,
+      emoji: getEmoji(guild),
       country: guild.preferredLocale,
     };
 
@@ -74,7 +76,7 @@ router.get('/:id', async (req, res) => {
 
     const guildInfo = {
       data: filteredGuildData,
-      invite: invite.url,
+      invite: invite.url || "no invite",
       success: true
     };
 

@@ -71,6 +71,33 @@ function getCreation(userId) {
   return creationDate.toISOString();
 }
 
+function getEmoji(guild) {
+  const verified = guild.verified;
+  const community = guild.features.includes('COMMUNITY');
+  const discoverable = guild.features.includes('DISCOVERABLE');
+  const boostCount = guild.premiumSubscriptionCount;
+
+  if (verified) {
+    return "https://cdn3.emoji.gg/emojis/1178-verified.png";
+  }
+  if (community) {
+    if (discoverable) {
+      if (boostCount > 0) {
+        return "https://cdn3.emoji.gg/emojis/4118-community-server-boosted-public.png";
+      } else {
+        return "https://cdn3.emoji.gg/emojis/5006-community-server-w.png";
+      }
+    } else {
+      if (boostCount > 0) {
+        return "https://cdn3.emoji.gg/emojis/3388-community-server-boosted.png";
+      } else {
+        return "https://cdn3.emoji.gg/emojis/4118-community-server-w.png";
+      }
+    }
+  }
+  return null;
+}
+
 function getAccountCreationDate(userId) {
   const DISCORD_EPOCH = 1420070400000;
   const timestamp = BigInt(userId) >> 22n;
@@ -154,6 +181,7 @@ module.exports = {
   statusEmoji,
   processBio,
   getGuildCreationDate,
+  getEmoji,
   getCreation,
   getAccountCreationDate,
   processLargeImage,
