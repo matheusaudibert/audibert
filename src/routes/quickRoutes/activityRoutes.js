@@ -21,6 +21,8 @@ router.get('/:id', async (req, res) => {
       });
     }
 
+    const userStatus = member.presence?.status || 'invisible';
+
     const activities = member.presence?.activities || [];
 
     const spotifyActivity = activities
@@ -97,11 +99,9 @@ router.get('/:id', async (req, res) => {
         );
       });
 
-    console.log(member.presence?.status);
-
     const ApiJSON = {
       data: {
-        status: member.presence?.status || 'invisible',
+        status: userStatus,
         spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
         activity: Activity.length > 0 ? Activity.reverse() : null,
       },
