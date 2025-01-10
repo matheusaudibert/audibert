@@ -99,6 +99,7 @@ router.get('/:id', async (req, res) => {
 
     const ApiJSON = {
       data: {
+        status: member.presence?.status || 'invisible',
         spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
         activity: Activity.length > 0 ? Activity.reverse() : null,
       },
