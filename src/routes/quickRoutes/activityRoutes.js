@@ -21,11 +21,6 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    const userStatus  = member.presence?.status;
-    if (userStatus === 'offline'){
-      userStatus = 'invisible';
-    }
-
     const activities = member.presence?.activities || [];
 
     const spotifyActivity = activities
@@ -102,9 +97,11 @@ router.get('/:id', async (req, res) => {
         );
       });
 
+    console.log(member.presence?.status);
+
     const ApiJSON = {
       data: {
-        status: userStatus,
+        status: member.presence?.status || 'invisible',
         spotify: spotifyActivity.length > 0 ? spotifyActivity[0] : null,
         activity: Activity.length > 0 ? Activity.reverse() : null,
       },
