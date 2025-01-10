@@ -20,6 +20,16 @@ router.get('/:id', async (req, res) => {
       });
     }
 
+    await guild.channels.fetch();
+    const allChannels = guild.channels.cache;
+    const textChannels = allChannels.filter(c => c.type === 0);
+    const channel = textChannels.first();
+    const invite = await channel.createInvite({
+      maxAge: 604800,
+      maxUses: 5,
+      unique: true,
+    });
+
     const onlineMembers = guild.members.cache.filter(member => 
       member.presence?.status === 'online' || 
       member.presence?.status === 'idle' || 
@@ -63,6 +73,7 @@ router.get('/:id', async (req, res) => {
 
     const guildInfo = {
       data: filteredGuildData,
+      invite: invite.url,
       success: true
     };
 
