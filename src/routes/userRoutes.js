@@ -135,8 +135,8 @@ router.get('/:id', async (req, res) => {
       Object.entries(profileInfo).filter(([_, value]) => value !== null)
     );
 
-    const userStatus = member.presence?.status;
-    if(userStatus === 'offline') {
+    let userStatus = member.presence?.status || 'invisible';
+    if (userStatus === 'offline') {
       userStatus = 'invisible';
     }
 

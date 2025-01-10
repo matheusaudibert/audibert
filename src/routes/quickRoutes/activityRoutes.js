@@ -21,8 +21,8 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    const userStatus = member.presence?.status;
-    if(userStatus === 'offline') {
+    let userStatus = member.presence?.status || 'invisible';
+    if (userStatus === 'offline') {
       userStatus = 'invisible';
     }
 
