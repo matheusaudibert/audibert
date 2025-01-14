@@ -1,8 +1,8 @@
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
-const config = require("./config/config");
 const client = require("./services/discordClient");
+const config = require("./config/config");
 const userRoutes = require("./routes/userRoutes");
 const guildRoutes = require("./routes/guildRoutes");
 const activityRoutes = require("./routes/quickRoutes/activityRoutes");
@@ -23,13 +23,25 @@ app.use("/guild", guildRoutes);
 app.use("/guilds", guildsRoutes);
 app.use("/activity", activityRoutes);
 
-client.once("ready", () => {
-  console.log(`Bot on: ${client.user.tag}`);
-});
+const startServer = async () => {
+  try {
+    await new Promise((resolve) => {
+      if (client.isReady()) resolve();
+      else client.once("ready", resolve);
+    });
 
-app.listen(PORT, () => {
-  console.log(`API is running on port ${PORT}`);
-});
+    console.log(`Bot online como: ${client.user.tag}`);
+
+    app.listen(PORT, () => {
+      console.log(`API rodando na porta ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Erro ao iniciar:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
 
 app.use("*", (req, res) => {
   res.status(404).json({
