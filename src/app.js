@@ -23,25 +23,11 @@ app.use("/guild", guildRoutes);
 app.use("/guilds", guildsRoutes);
 app.use("/activity", activityRoutes);
 
-const startServer = async () => {
-  try {
-    await new Promise((resolve) => {
-      if (client.isReady()) resolve();
-      else client.once("ready", resolve);
-    });
+app.listen(PORT, () => {
+  console.log(`API rodando na porta ${PORT}`);
+});
 
-    console.log(`Bot online como: ${client.user.tag}`);
-
-    app.listen(PORT, () => {
-      console.log(`API rodando na porta ${PORT}`);
-    });
-  } catch (error) {
-    console.error("Erro ao iniciar:", error);
-    process.exit(1);
-  }
-};
-
-startServer();
+console.log(`Bot online como: ${client.user.tag}`);
 
 app.use("*", (req, res) => {
   res.status(404).json({
