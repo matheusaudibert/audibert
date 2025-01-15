@@ -27,8 +27,6 @@ app.listen(PORT, () => {
   console.log(`API rodando na porta ${PORT}`);
 });
 
-console.log(`Bot online como: ${client.user.tag}`);
-
 app.use("*", (req, res) => {
   res.status(404).json({
     error: {

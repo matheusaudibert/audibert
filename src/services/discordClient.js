@@ -10,6 +10,7 @@ const client = new Client({
 });
 
 client.once("ready", () => {
+  console.log("Bot is ready!");
   client.user.setPresence({
     activities: [
       {
