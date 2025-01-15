@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
-const client = require("./services/discordClient");
 const config = require("./config/config");
 const userRoutes = require("./routes/userRoutes");
 const guildRoutes = require("./routes/guildRoutes");
@@ -24,7 +23,7 @@ app.use("/guilds", guildsRoutes);
 app.use("/activity", activityRoutes);
 
 app.listen(PORT, () => {
-  console.log(`API rodando na porta ${PORT}`);
+  console.log(`API running in port ${PORT}`);
 });
 
 app.use("*", (req, res) => {
