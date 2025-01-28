@@ -30,6 +30,18 @@ function statusEmoji(activities) {
   return null;
 }
 
+function statusText(activities) {
+  const customStatus = activities.find(
+    (activity) => activity.name === "Custom Status"
+  );
+
+  if (customStatus && customStatus.state) {
+    return customStatus.state;
+  }
+
+  return null;
+}
+
 function processBio(bio) {
   if (!bio) return null;
 
@@ -220,6 +232,7 @@ const processSmallImage = (image, applicationId) => {
 module.exports = {
   checkUserInGuilds,
   statusEmoji,
+  statusText,
   processBio,
   getGuildCreationDate,
   getEmoji,
