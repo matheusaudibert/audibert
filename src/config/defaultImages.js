@@ -35,4 +35,8 @@ module.exports = {
     largeImage:
       "https://cdn.discordapp.com/app-icons/356875570916753438/166fbad351ecdd02d11a3b464748f66b.png",
   },
+  "World of Tanks Blitz": {
+    largeImage:
+      "https://cdn.discordapp.com/app-icons/419272031960432651/3d22f4d22095e18963ff8bb7b67b8946.png",
+  },
 };
