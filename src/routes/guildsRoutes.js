@@ -1,27 +1,28 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const client = require('../services/discordClient');
+const client = require("../services/discordClient");
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    const guilds = client.guilds.cache.map(guild => ({
+    const guilds = client.guilds.cache.map((guild) => ({
       id: guild.id,
       name: guild.name,
-      owner_id: guild.ownerId
+      owner_id: guild.ownerId,
     }));
 
     res.json({
+      count: guilds.length,
       data: guilds,
-      success: true
+      success: true,
     });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({
       error: {
-        code: 'internal_server_error',
-        message: error.message
+        code: "internal_server_error",
+        message: error.message,
       },
-      success: false
+      success: false,
     });
   }
 });

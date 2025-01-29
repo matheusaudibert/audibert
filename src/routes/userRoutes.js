@@ -120,6 +120,12 @@ router.get("/:id", async (req, res) => {
       ? `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}`
       : defaultAvatar;
 
+    if (data.user_profile.pronouns) {
+      pronouns = data.user_profile.pronouns;
+    } else {
+      pronouns = null;
+    }
+
     const profileInfo = {
       bot: data.user.bot || "false",
       id: data.user.id,
@@ -129,7 +135,7 @@ router.get("/:id", async (req, res) => {
       display_name: data.user.global_name,
       status_emoji: statusEmoji(activities),
       status: statusText(activities),
-      pronouns: data.user_profile.pronouns,
+      pronouns: pronouns,
       bio: data.user.bio,
       link: `https://discord.com/users/${data.user.id}`,
       avatar: data.user.avatar || "0",
@@ -165,6 +171,8 @@ router.get("/:id", async (req, res) => {
         : null,
       connected_accounts: processConnectedAccounts(data.connected_accounts),
     };
+
+    console.log(data.user_profile.pronouns);
 
     const filteredProfileInfo = Object.fromEntries(
       Object.entries(profileInfo).filter(([_, value]) => value !== null)
