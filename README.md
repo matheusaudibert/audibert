@@ -164,7 +164,7 @@ When making requests to the Audibert API, you may encounter these error codes. U
 
 ## Note
 
-Some activity images may not be returned correctly. This is a limitation of Discord, as the activity the user is playing may not have direct configuration for rich presence on Discord. In such cases, a default image will be returned: ![Default Image](https://ibb.co/yF7QFQY6)
+Some activity images may not be returned correctly. This is a limitation of Discord, as the activity the user is playing may not have direct configuration for rich presence on Discord. In such cases, a default image will be returned [this image](https://ibb.co/yF7QFQY6).
 
 Some apps with this problem were alredy fixed in the code, by proving a image for them:
 
