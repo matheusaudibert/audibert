@@ -172,8 +172,6 @@ router.get("/:id", async (req, res) => {
       connected_accounts: processConnectedAccounts(data.connected_accounts),
     };
 
-    console.log(data.user_profile.pronouns);
-
     const filteredProfileInfo = Object.fromEntries(
       Object.entries(profileInfo).filter(([_, value]) => value !== null)
     );
