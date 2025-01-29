@@ -96,104 +96,6 @@ Example response:
 }
 ```
 
-<!-- #### Get User Acitivity
-
-GET `api.rest.audibert/activty/:userid`
-
-Example response:
-
-```json
-{
-  "data": {
-    "status": "idle",
-    "spotify": {
-      "type": "Listening to Spotify",
-      "name": "Spotify",
-      "song": "L's",
-      "artist": "Nemzzz",
-      "album": "DO NOT DISTURB (DELUXE)",
-      "album_image": "https://i.scdn.co/image/ab67616d0000b27328b4eaa6b95cb08edc6a979f",
-      "link": "https://open.spotify.com/track/4eIkgU9qfmwwPicaCRUI55",
-      "timestamps": {
-        "progress": "0:35",
-        "duration": "1:57"
-      }
-    },
-    "activity": [
-      {
-        "type": "Playing",
-        "name": "Visual Studio Code",
-        "state": "Workspace: audibert",
-        "details": "Editing README.md",
-        "largeText": "Editing a MARKDOWN file",
-        "largeImage": "https://cdn.discordapp.com/app-assets/383226320970055681/565945077491433494.png",
-        "smallText": "Visual Studio Code",
-        "smallImage": "https://cdn.discordapp.com/app-assets/383226320970055681/565945770067623946.png",
-        "timestamps": {
-          "time_lapsed": "36:06"
-        }
-      }
-    ]
-  },
-  "success": true
-}
-``` -->
-
-<!-- #### Get Guilds
-
-GET `api.rest.audibert/guilds`
-
-Example response:
-
-```json
-{
-  "count": 8,
-  "data": [
-    {
-      "id": "898561725857685524",
-      "name": "𝓞𝓷𝓵𝔂𝓑𝓸𝓽𝓼",
-      "owner_id": "605750453120139275"
-    },
-    {
-      "id": "1061792195893543047",
-      "name": "Bar das Galaxias",
-      "owner_id": "478561686673162240"
-    },
-    {
-      "id": "1287828475729678336",
-      "name": "Discode",
-      "owner_id": "1274150219482660897"
-    },
-    {
-      "id": "1313726337994723441",
-      "name": "/nerdolas",
-      "owner_id": "303699181900660737"
-    },
-    {
-      "id": "1313921883728515194",
-      "name": "audi",
-      "owner_id": "1274150219482660897"
-    },
-    {
-      "id": "1316602054759813191",
-      "name": "grwx's server",
-      "owner_id": "1274150219482660897"
-    },
-    {
-      "id": "1327810016463290509",
-      "name": "pedro margarido morreu ontem de noite",
-      "owner_id": "1274150219482660897"
-    },
-    {
-      "id": "1330322535618969736",
-      "name": "HOLDER",
-      "owner_id": "1274150219482660897"
-    }
-  ],
-  "success": true
-}
-``` -->
-
 #### Get Specific Guild
 
 GET `api.audibert.rest/guild/:guildid`
@@ -230,7 +132,19 @@ Example response:
 
 Audibert provides quick links for easy access to specific Discord resources, such as profiles and activities.
 
-GET `api.audibert.rest/profile/:userid` or GET `api.audibert.rest/activity/:userid`
+### Profile
+
+It will return:
+profile photo, username and display name
+
+GET `api.audibert.rest/profile/:userid`
+
+### Activity
+
+It will return:
+Spotify and activty
+
+GET `api.audibert.rest/activity/:userid`
 
 ## Error Codes
 
