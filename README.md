@@ -132,7 +132,7 @@ Example response:
 
 Audibert provides quick links for easy access to specific Discord resources, such as profiles, activities and guilds.
 
-### Profile
+### Profile (Soon)
 
 It will return:
 profile photo, username and display name
