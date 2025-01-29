@@ -169,7 +169,6 @@ Some activity images may not be returned correctly. This is a limitation of Disc
 Some apps with this problem were alredy fixed in the code, by proving a image for them:
 
 ```javascript
-module.exports = {
   VALORANT: {
     largeImage: "https://cdn.discordapp.com/app-icons/700136079562375258/e55fc8259df1548328f977d302779ab7.png",
   },
