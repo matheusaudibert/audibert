@@ -2,7 +2,7 @@
 
 Audibert is aservice that makes it easy to access Discord presence data and guild information through a RESTful API `(api.rest.audibert/user/:userid)`. Perfect for displaying your Discord profile, badges, status, activities, and server information on your website or application.
 
-## Get Started in Seconds
+## Get Started
 
 1. [Join our Discord server](https://discord.gg/QaHyQz34Gq)
 2. Your presence will be available at `api.rest.audibert/user/:userid`
@@ -139,7 +139,7 @@ Example response:
 }
 ``` -->
 
-#### Get Guilds
+<!-- #### Get Guilds
 
 GET `api.rest.audibert/guilds`
 
@@ -192,7 +192,7 @@ Example response:
   ],
   "success": true
 }
-```
+``` -->
 
 #### Get Specific Guild
 
@@ -225,6 +225,12 @@ Example response:
   "success": true
 }
 ```
+
+## Quick Links
+
+Audibert provides quick links for easy access to specific Discord resources, such as profiles and activities.
+
+GET `api.rest.audibert/profile/:userid` or GET `api.rest.audibert/activity/:userid`
 
 ## Error Codes
 
