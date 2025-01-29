@@ -130,7 +130,7 @@ Example response:
 
 ## Quick Links
 
-Audibert provides quick links for easy access to specific Discord resources, such as profiles and activities.
+Audibert provides quick links for easy access to specific Discord resources, such as profiles, activities and guilds.
 
 ### Profile
 
@@ -146,6 +146,13 @@ Spotify and activty
 
 GET `api.audibert.rest/activity/:userid`
 
+### Guilds
+
+It will return:
+All guilds the bot is member
+
+GET `api.audibert.rest/guilds`
+
 ## Error Codes
 
 When making requests to the Audibert API, you may encounter these error codes. Use these codes to understand and handle errors in your application appropriately.
@@ -154,6 +161,30 @@ When making requests to the Audibert API, you may encounter these error codes. U
 | ---- | ----------------------------------------- |
 | 404  | Resource not found (route, user or guild) |
 | 500  | Internal server error                     |
+
+## Note
+
+Some activity images may not be returned correctly. This is a limitation of Discord, as the activity the user is playing may not have direct configuration for rich presence on Discord. In such cases, a default image will be returned: ![Default Image](https://ibb.co/yF7QFQY6)
+
+Some apps with this problem were alredy fixed in the code, by proving a image for them:
+
+```javascript
+module.exports = {
+  VALORANT: {
+    largeImage: "https://cdn.discordapp.com/app-icons/700136079562375258/e55fc8259df1548328f977d302779ab7.png",
+  },
+  Roblox: {
+    largeImage: "https://cdn.discordapp.com/app-icons/363445589247131668/f2b60e350a2097289b3b0b877495e55f.png",
+  },
+  Fortnite: {
+    largeImage: "https://cdn.discordapp.com/app-icons/432980957394370572/c1864b38910c209afd5bf6423b672022.png",
+  }
+  .
+  .
+  .
+```
+
+If you encounter issues with your activity image, consider opening a pull request following the format above to add your activity with the correct image.
 
 ## Contributing
 
