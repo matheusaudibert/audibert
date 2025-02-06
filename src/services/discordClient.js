@@ -1,6 +1,8 @@
 const { Client, GatewayIntentBits, ActivityType } = require("discord.js");
 const config = require("../config/config");
 
+console.log("Initializing Discord Bot...");
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -10,6 +12,7 @@ const client = new Client({
 });
 
 client.once("ready", () => {
+  console.log("Bot is ready!");
   client.user.setPresence({
     activities: [
       {
@@ -18,13 +21,14 @@ client.once("ready", () => {
       },
     ],
   });
-  console.log("Bot is online and ready!");
 });
 
 client.on("error", (error) => {
-  console.error("Erro no client:", error);
+  console.error("Error in client:", error);
 });
 
-client.login(config.DISCORD_TOKEN);
+client.login(config.DISCORD_TOKEN).catch((error) => {
+  console.error("Login failed:", error);
+});
 
 module.exports = client;
