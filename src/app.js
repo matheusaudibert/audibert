@@ -35,6 +35,6 @@ setTimeout(() => {
       },
     });
   });
-}, 30000);
+}, 60000);
 
 module.exports = app;
