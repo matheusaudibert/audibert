@@ -19,10 +19,6 @@ client.once("ready", () => {
     ],
   });
   console.log("Bot is online and ready!");
-
-  require("../app").listen(config.PORT, () => {
-    console.log(`API is running on port ${config.PORT}`);
-  });
 });
 
 client.on("error", (error) => {

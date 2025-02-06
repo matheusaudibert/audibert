@@ -8,6 +8,7 @@ const activityRoutes = require("./routes/quickRoutes/activityRoutes");
 const guildsRoutes = require("./routes/guildsRoutes");
 
 const app = express();
+const PORT = config.PORT;
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
@@ -20,6 +21,10 @@ app.use("/user", userRoutes);
 app.use("/guild", guildRoutes);
 app.use("/guilds", guildsRoutes);
 app.use("/activity", activityRoutes);
+
+app.listen(PORT, () => {
+  console.log(`API running in port ${PORT}`);
+});
 
 app.use("*", (req, res) => {
   res.status(404).json({
