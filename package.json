@@ -5,8 +5,7 @@
   "main": "src/api/index.js",
   "scripts": {
     "start": "node src/api/index.js",
-    "vercel-build": "echo 'Built successfully'",
-    "dev": "vercel dev"
+    "vercel-build": "echo 'Built successfully'"
   },
   "dependencies": {
     "cors": "^2.8.5",
