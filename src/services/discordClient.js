@@ -20,7 +20,6 @@ client.once("ready", () => {
   });
   console.log("Bot is online and ready!");
 
-  // Agora que o bot está pronto, podemos iniciar o servidor Express
   require("../app").listen(config.PORT, () => {
     console.log(`API is running on port ${config.PORT}`);
   });
