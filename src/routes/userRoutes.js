@@ -32,16 +32,18 @@ async function fetchUserProfile(userId, usedTokens = []) {
     availableTokens[Math.floor(Math.random() * availableTokens.length)];
   usedTokens.push(randomAuthToken);
 
+  console.log(randomAuthToken);
+
   try {
     const response = await fetch(
-      `https://canary.discord.com/api/v10/users/${userId}/profile`,
+      `https://discord.com/api/v10/users/${userId}/profile`,
       {
         method: "GET",
         headers: { authorization: randomAuthToken },
       }
     );
 
-    if (response.status === 401) {
+    if (response.status === 401 || response.status === 403) {
       console.log(`Token ${authTokens.indexOf(randomAuthToken) + 1} failed`);
       return fetchUserProfile(userId, usedTokens);
     }
