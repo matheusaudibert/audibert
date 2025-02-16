@@ -2,15 +2,18 @@ const config = require("../config/config");
 const defaultImages = require("../config/defaultImages");
 
 const checkUserInGuilds = async (client, USER_ID) => {
-  const GUILD_ID = process.env.GUILD_ID;
   let isUserFound = false;
   let member = null;
 
   try {
-    const guild = await client.guilds.fetch(GUILD_ID);
-    member = await guild.members.fetch(USER_ID);
-    if (member) {
-      isUserFound = true;
+    for (const guild of client.guilds.cache.values()) {
+      try {
+        member = await guild.members.fetch(USER_ID);
+        if (member) {
+          isUserFound = true;
+          break;
+        }
+      } catch (error) {}
     }
   } catch (error) {}
 
