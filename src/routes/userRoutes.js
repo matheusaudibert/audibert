@@ -12,13 +12,10 @@ const {
   getAccountCreationDate,
   getCreation,
   checkUserInGuilds,
+  processUserFlags,
 } = require("../utils/jsonProcessor");
 
-const authTokens = [
-  process.env.DISCORD_AUTH_1,
-  process.env.DISCORD_AUTH_2,
-  process.env.DISCORD_AUTH_3,
-];
+const authTokens = [process.env.DISCORD_AUTH_1];
 
 async function fetchUserProfile(userId, usedTokens = []) {
   const availableTokens = authTokens.filter(
@@ -32,8 +29,6 @@ async function fetchUserProfile(userId, usedTokens = []) {
     availableTokens[Math.floor(Math.random() * availableTokens.length)];
   usedTokens.push(randomAuthToken);
 
-  console.log(randomAuthToken);
-
   try {
     const response = await fetch(
       `https://discord.com/api/v10/users/${userId}/profile`,
@@ -43,36 +38,13 @@ async function fetchUserProfile(userId, usedTokens = []) {
       }
     );
 
-    if (response.status === 401 || response.status === 403) {
-      console.log(`Token ${authTokens.indexOf(randomAuthToken) + 1} failed`);
-      return fetchUserProfile(userId, usedTokens);
-    }
-
-    if (response.status === 429) {
-      return {
-        status: 429,
-        json: {
-          error: {
-            code: "too_many_requests",
-            message: "Too many requests. Please try again later.",
-          },
-          success: false,
-        },
-      };
-    }
-
-    if (!response.ok) {
-      throw new Error(
-        `Erro na requisição: ${response.status} ${response.statusText}`
-      );
-    }
-
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      throw new Error("Resposta não é JSON.");
+      throw new Error("Error");
     }
 
     const data = await response.json();
+
     return { status: 200, json: data };
   } catch (error) {
     throw error;
@@ -91,87 +63,67 @@ router.get("/:id", async (req, res) => {
           code: "user_not_monitored",
           message: "User is not being monitored by Audibert",
           server: "https://discord.gg/QaHyQz34Gq",
+          invite_the_bot: "https://api.audibert.rest",
         },
         success: false,
       });
     }
 
-    const { status, json } = await fetchUserProfile(USER_ID);
+    const defaultBadges = processUserFlags(member.user.flags);
+    let extraBadges = [];
+    let connectedAccounts = [];
 
-    if (status === 429) {
-      return res.status(429).json(json);
-    }
+    try {
+      const { status, json: data } = await fetchUserProfile(USER_ID);
 
-    const data = json;
+      if (status === 200) {
+        const defaultBadgeIds = defaultBadges.map((badge) => badge.id);
+        extraBadges = data.badges
+          ? data.badges
+              .filter((badge) => !defaultBadgeIds.includes(badge.id))
+              .map((badge) => ({
+                id: badge.id,
+                description: badge.description,
+                asset: badge.icon,
+                icon_image: `https://cdn.discordapp.com/badge-icons/${badge.icon}.png`,
+              }))
+          : [];
+
+        connectedAccounts = processConnectedAccounts(data.connected_accounts);
+      }
+    } catch (error) {}
 
     const activities = member.presence?.activities || [];
 
-    const avatarExtension = data.user.avatar
-      ? data.user.avatar.startsWith("a_")
-        ? "gif"
-        : "png"
-      : "png";
-    const bannerExtension = data.user.banner
-      ? data.user.banner.startsWith("a_")
-        ? "gif"
-        : "png"
-      : null;
-    const defaultAvatar = `https://cdn.discordapp.com/embed/avatars/0.png`;
-
-    avatar_image = data.user.avatar
-      ? `https://cdn.discordapp.com/avatars/${data.user.id}/${data.user.avatar}.${avatarExtension}`
-      : defaultAvatar;
-
-    if (data.user_profile.pronouns) {
-      pronouns = data.user_profile.pronouns;
-    } else {
-      pronouns = null;
-    }
-
     const profileInfo = {
-      bot: data.user.bot || "false",
-      id: data.user.id,
-      creation_date: getCreation(data.user.id),
-      member_since: getAccountCreationDate(data.user.id),
-      username: data.user.username,
-      display_name: data.user.global_name,
+      bot: member.user.bot || "false",
+      device: member.presence?.clientStatus?.desktop
+        ? "desktop"
+        : member.presence?.clientStatus?.mobile
+        ? "mobile"
+        : member.presence?.clientStatus?.web
+        ? "web"
+        : null,
+      public_flags: member.user.flags,
+      id: member.user.id,
+      creation_date: getCreation(member.user.id),
+      member_since: getAccountCreationDate(member.user.id),
+      username: member.user.username,
+      display_name: member.user.globalName,
       status_emoji: statusEmoji(activities),
       status: statusText(activities),
-      pronouns: pronouns,
-      bio: data.user.bio,
-      link: `https://discord.com/users/${data.user.id}`,
-      avatar: data.user.avatar || "0",
-      avatar_image: avatar_image,
-      avatar_decoration: data.user.avatar_decoration_data
+      link: `https://discord.com/users/${member.user.id}`,
+      avatar: member.user.avatar,
+      avatar_image: member.user.displayAvatarURL(),
+      avatar_decoration: member.user.avatarDecorationData
         ? {
-            sku_id: data.user.avatar_decoration_data.sku_id,
-            icon: data.user.avatar_decoration_data.asset,
-            icon_image: `https://cdn.discordapp.com/avatar-decoration-presets/${data.user.avatar_decoration_data.asset}.png`,
+            sku_id: member.user.avatarDecorationData.skuId,
+            icon: member.user.avatarDecorationData.asset,
+            icon_image: `https://cdn.discordapp.com/avatar-decoration-presets/${member.user.avatarDecorationData.asset}.png`,
           }
         : null,
-      banner: data.user.banner,
-      banner_image: data.user.banner
-        ? `https://cdn.discordapp.com/banners/${data.user.id}/${data.user.banner}.${bannerExtension}`
-        : null,
-
-      clan: data.user.clan
-        ? {
-            identity_guild_id: data.user.clan.identity_guild_id,
-            tag: data.user.clan.tag,
-            icon: data.user.clan.badge,
-            icon_image: `https://cdn.discordapp.com/clan-badges/${data.user.clan.identity_guild_id}/${data.user.clan.badge}.png`,
-          }
-        : null,
-      badges: data.badges
-        ? data.badges.map((badge) => ({
-            id: badge.id,
-            description: badge.description,
-            icon: badge.icon,
-            icon_image: `https://cdn.discordapp.com/badge-icons/${badge.icon}.png`,
-            link: badge.link,
-          }))
-        : null,
-      connected_accounts: processConnectedAccounts(data.connected_accounts),
+      badges: [...defaultBadges, ...extraBadges],
+      connected_accounts: connectedAccounts,
     };
 
     const filteredProfileInfo = Object.fromEntries(

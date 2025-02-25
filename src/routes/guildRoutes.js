@@ -60,9 +60,6 @@ router.get("/:id", async (req, res) => {
       description: guild.description || null,
       icon: getIconUrl(guild.icon),
       banner: getBannerUrl(guild.banner),
-      splash: guild.splash
-        ? `https://cdn.discordapp.com/splashes/${guild.id}/${guild.splash}.png`
-        : null,
       boost_count: guild.premiumSubscriptionCount,
       boost_level: guild.premiumTier,
       community: guild.features.includes("COMMUNITY"),
