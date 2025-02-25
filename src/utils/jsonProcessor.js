@@ -21,9 +21,15 @@ const checkUserInGuilds = async (client, USER_ID) => {
 
       try {
         member = await guild.members.fetch(USER_ID, { force: true });
-        if (member) {
-          isUserFound = true;
-          break;
+        for (const guild of client.guilds.cache.values()) {
+          try {
+            member = await guild.members.fetch(USER_ID);
+
+            if (member) {
+              isUserFound = true;
+              break;
+            }
+          } catch (error) {}
         }
       } catch (error) {}
     }

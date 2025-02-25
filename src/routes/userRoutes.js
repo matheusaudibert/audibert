@@ -44,7 +44,6 @@ async function fetchUserProfile(userId, usedTokens = []) {
     }
 
     const data = await response.json();
-
     return { status: 200, json: data };
   } catch (error) {
     throw error;
