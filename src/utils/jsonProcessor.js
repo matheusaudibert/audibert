@@ -8,10 +8,11 @@ const checkUserInGuilds = async (client, USER_ID) => {
 
   try {
     try {
-      const mainGuild = await client.guilds.fetch(MAIN_GUILD_ID);
+      const mainGuild = await client.guilds.fetch(MAIN_GUILD);
       member = await mainGuild.members.fetch(USER_ID, { force: true });
       if (member) {
         isUserFound = true;
+        console.log("User found in main guild.");
         return { isUserFound, member };
       }
     } catch (error) {}
