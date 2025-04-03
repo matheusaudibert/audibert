@@ -34,7 +34,11 @@ async function fetchUserProfile(userId, usedTokens = []) {
       `https://discord.com/api/v10/users/${userId}/profile`,
       {
         method: "GET",
-        headers: { authorization: randomAuthToken },
+        headers: {
+          authorization: randomAuthToken,
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        },
       }
     );
 
