@@ -16,7 +16,7 @@ client.once("ready", () => {
   client.user.setPresence({
     activities: [
       {
-        name: "api.audibert.rest",
+        name: "grux.audibert.dev",
         type: ActivityType.Playing,
       },
     ],
