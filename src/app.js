@@ -34,7 +34,7 @@ app.use("/activity", cache(300), activityRoutes);
 
 app.listen(PORT, () => {
   console.log(
-    `API running!\nhttps://locahost:${PORT}/user/1274150219482660897`
+    `API running on http://localhost:${PORT}/user/1274150219482660897`
   );
 });
 
