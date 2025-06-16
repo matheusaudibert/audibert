@@ -17,9 +17,8 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({
         error: {
           code: "user_not_monitored",
-          message: "User is not being monitored by Audibert",
-          server: "https://discord.gg/QaHyQz34Gq",
-          invite_the_bot: "https://api.audibert.rest",
+          message: "User is not being monitored by Grux",
+          server: "https://discord.gg/gu7sKjwEz5",
         },
         success: false,
       });
