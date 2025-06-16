@@ -6,5 +6,4 @@ module.exports = {
   DISCORD_TOKEN: process.env.DISCORD_TOKEN,
   MAIN_GUILD: process.env.MAIN_GUILD,
   DEFAULT_ACTIVITY_IMAGE: "https://i.ibb.co/1GjmGmdr/a.png",
-  DEFAULT_SERVER_IMAGE: "https://i.ibb.co/Hfy65cGT/47700d2e75da.png",
 };
