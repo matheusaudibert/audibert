@@ -33,7 +33,9 @@ app.use("/user", cache(300), userRoutes);
 app.use("/activity", cache(300), activityRoutes);
 
 app.listen(PORT, () => {
-  console.log(`API running in port ${PORT}`);
+  console.log(
+    `API running!\nhttps://locahost:${PORT}/user/1274150219482660897`
+  );
 });
 
 app.use("*", (req, res) => {

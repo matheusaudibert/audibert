@@ -1,8 +1,6 @@
 const { Client, GatewayIntentBits, ActivityType } = require("discord.js");
 const config = require("../config/config");
 
-console.log("Initializing Discord Bot...");
-
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -12,12 +10,12 @@ const client = new Client({
 });
 
 client.once("ready", () => {
-  console.log("Bot is ready!");
+  console.log(`${client.user.tag} online!`);
   client.user.setPresence({
     activities: [
       {
         name: "grux.audibert.dev",
-        type: ActivityType.Playing,
+        type: ActivityType.Watching,
       },
     ],
   });

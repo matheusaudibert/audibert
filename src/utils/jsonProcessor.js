@@ -119,7 +119,7 @@ const processBadges = (badgesData) => {
 
 const processProfileInfo = (member, userData) => {
   const nameplate_image = userData?.nameplate?.asset
-    ? `https://cdn.discordapp.com/assets/collectibles/${userData.nameplate.asset}/static.png`
+    ? `https://cdn.discordapp.com/assets/collectibles/${userData.nameplate.asset}static.png`
     : null;
 
   return {
