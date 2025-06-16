@@ -28,7 +28,7 @@ const cache = (duration) => {
   };
 };
 
-// Cache de 5 minutos (300 segundos)
+// Cache 5 min (300 secs)
 app.use("/user", cache(300), userRoutes);
 app.use("/activity", cache(300), activityRoutes);
 

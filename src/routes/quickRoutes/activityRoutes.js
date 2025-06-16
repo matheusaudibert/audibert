@@ -32,11 +32,9 @@ router.get("/:id", async (req, res) => {
 
     const activities = member.presence?.activities || [];
 
-    // Processa atividades usando funções do utilitário
     const spotifyActivity = processSpotifyActivity(activities);
     const generalActivity = processGeneralActivities(activities);
 
-    // Retorna a resposta final
     return res.json({
       data: {
         status: userStatus,
