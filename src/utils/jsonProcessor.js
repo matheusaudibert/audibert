@@ -117,9 +117,27 @@ const processBadges = (badgesData) => {
     : [];
 };
 
+const processClan = (clanData) => {
+  if (
+    !clanData ||
+    !clanData.identity_guild_id ||
+    !clanData.badge ||
+    !clanData.tag
+  ) {
+    return null;
+  }
+
+  return {
+    tag: clanData.tag,
+    identity_guild_id: clanData.identity_guild_id,
+    asset: clanData.badge,
+    clan_image: `https://cdn.discordapp.com/clan-badges/${clanData.identity_guild_id}/${clanData.badge}.png`,
+  };
+};
+
 const processProfileInfo = (member, userData) => {
   const nameplate_image = userData?.nameplate?.asset
-    ? `https://cdn.discordapp.com/assets/collectibles/${userData.nameplate.asset}static.png`
+    ? `https://cdn.discordapp.com/assets/collectibles/${userData.nameplate.asset}/static.png`
     : null;
 
   return {
@@ -146,6 +164,7 @@ const processProfileInfo = (member, userData) => {
       : null,
     nameplate_image,
     badges: processBadges(userData.badges),
+    clan: processClan(userData.clan),
     connected_accounts: processConnectedAccounts(
       userData.connectedAccounts || []
     ),
@@ -181,7 +200,7 @@ const processSpotifyActivity = (activities) => {
 
 const processGeneralActivities = (activities) => {
   const generalActivities = activities
-    .filter((activity) => activity.type === 0) //
+    .filter((activity) => activity.type === 0)
     .map((activity) => ({
       type: "Playing",
       name: activity.name,
@@ -213,6 +232,7 @@ module.exports = {
   processSmallImage,
   processConnectedAccounts,
   processBadges,
+  processClan,
   processProfileInfo,
   processSpotifyActivity,
   processGeneralActivities,

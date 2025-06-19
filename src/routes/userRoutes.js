@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { MongoClient } = require("mongodb");
 const client = require("../services/discordClient");
+const mcache = require("memory-cache");
 const {
   checkUserInGuilds,
   processProfileInfo,
@@ -11,6 +12,16 @@ const {
 const { handleSuccess, handleError } = require("../utils/responseHandler");
 
 const mongoUri = process.env.MONGODB_URI;
+
+const getCachedFields = (userId) => {
+  const cacheKey = `user_cached_fields_${userId}`;
+  return mcache.get(cacheKey);
+};
+
+const setCachedFields = (userId, fields) => {
+  const cacheKey = `user_cached_fields_${userId}`;
+  mcache.put(cacheKey, fields, 300 * 1000); // 5 minutos
+};
 
 router.get("/:id", async (req, res) => {
   const USER_ID = req.params.id;
@@ -28,32 +39,55 @@ router.get("/:id", async (req, res) => {
       );
     }
 
-    let userData = null;
-    try {
-      const mongoClient = new MongoClient(mongoUri);
-      await mongoClient.connect();
-      const database = mongoClient.db("test");
-      const usersCollection = database.collection("users");
-      userData = await usersCollection.findOne({ _id: USER_ID });
-      await mongoClient.close();
-    } catch (dbError) {
-      console.error("Error fetching data from MongoDB:", dbError);
-      return handleError(
-        res,
-        500,
-        "database_error",
-        "Could not retrieve user data from database."
-      );
+    // Verifica cache para campos específicos
+    let cachedFields = getCachedFields(USER_ID);
+
+    if (!cachedFields) {
+      let userData = null;
+      try {
+        const mongoClient = new MongoClient(mongoUri);
+        await mongoClient.connect();
+        const database = mongoClient.db("test");
+        const usersCollection = database.collection("users");
+        userData = await usersCollection.findOne({ _id: USER_ID });
+        await mongoClient.close();
+      } catch (dbError) {
+        console.error("Error fetching data from MongoDB:", dbError);
+        return handleError(
+          res,
+          500,
+          "database_error",
+          "Could not retrieve user data from database."
+        );
+      }
+
+      if (!userData) {
+        return handleError(
+          res,
+          404,
+          "user_not_in_database",
+          "User is in the server but not in the database"
+        );
+      }
+
+      // Extrai e cacheia apenas os campos específicos
+      cachedFields = {
+        badges: userData.badges || [],
+        nameplate: userData.nameplate || null,
+        connected_accounts: userData.connectedAccounts || [],
+        clan: userData.clan || null,
+      };
+
+      setCachedFields(USER_ID, cachedFields);
     }
 
-    if (!userData) {
-      return handleError(
-        res,
-        404,
-        "user_not_in_database",
-        "User is in the server but not in the database"
-      );
-    }
+    // Cria userData simulado com campos cacheados
+    const userData = {
+      badges: cachedFields.badges,
+      nameplate: cachedFields.nameplate,
+      connectedAccounts: cachedFields.connected_accounts,
+      clan: cachedFields.clan,
+    };
 
     const profileInfo = processProfileInfo(member, userData);
     const activities = member.presence?.activities || [];
