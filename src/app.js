@@ -15,7 +15,7 @@ app.use("/activity", activityRoutes);
 
 app.listen(PORT, () => {
   console.log(
-    `API running!\nhttp://localhost:${PORT}/user/1274150219482660897`
+    `API running on http://localhost:${PORT}/user/1274150219482660897`
   );
 });
 
