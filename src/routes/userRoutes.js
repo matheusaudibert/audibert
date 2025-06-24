@@ -35,7 +35,7 @@ router.get("/:id", async (req, res) => {
         404,
         "user_not_monitored",
         "User is not being monitored by Grux",
-        { server: "https://discord.gg/gu7sKjwEz5" }
+        { discord_invite: "https://discord.gg/gu7sKjwEz5" }
       );
     }
 
@@ -66,7 +66,7 @@ router.get("/:id", async (req, res) => {
           res,
           404,
           "user_not_in_database",
-          "User is in the server but not in the database"
+          "User is being monitored but it is not in the database."
         );
       }
 
