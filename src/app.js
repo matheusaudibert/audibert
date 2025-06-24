@@ -16,13 +16,16 @@ app.use(express.json());
 app.get("/", async (req, res) => {
   try {
     const mainGuild = await client.guilds.fetch(config.MAIN_GUILD);
-    const memberCount = mainGuild.memberCount;
+    await mainGuild.members.fetch();
+    const humanMemberCount = mainGuild.members.cache.filter(
+      (member) => !member.user.bot
+    ).size;
 
     res.json({
       data: {
         info: "Grux provides Discord presences as an API. Find out more here: https://github.com/matheusaudibert/grux",
         discord_invite: "https://discord.gg/gu7sKjwEz5",
-        monitored_user_count: memberCount,
+        monitored_user_count: humanMemberCount,
       },
       success: true,
     });

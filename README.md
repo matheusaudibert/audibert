@@ -18,7 +18,8 @@ That's all you need to do!
 
 `GET grux.audibert.dev/user/:userid`
 
-**Note**: This endpoint has a 5-minute cache for profile fields (nameplate, badges, clan, connected_accounts) to improve performance and avoid limits.
+> [!NOTE]
+> This endpoint has a 5-minute cache for profile fields (nameplate, badges, clan, connected_accounts) to improve performance and avoid limits.
 
 ```js
 {
