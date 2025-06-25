@@ -8,13 +8,24 @@ class WebSocketServer {
   constructor() {
     this.wss = null;
     this.subscribedUsers = new Map(); // userID -> Set of WebSocket connections
+    this.heartbeatInterval = null;
   }
 
   initialize(server) {
-    this.wss = new WebSocket.Server({ server });
+    this.wss = new WebSocket.Server({
+      server,
+      perMessageDeflate: false,
+      maxPayload: 1024 * 1024, // 1MB
+    });
 
     this.wss.on("connection", (ws) => {
       console.log("New WebSocket connection established");
+
+      // Configurar heartbeat para manter conexão viva
+      ws.isAlive = true;
+      ws.on("pong", () => {
+        ws.isAlive = true;
+      });
 
       ws.on("message", (data) => {
         try {
@@ -22,12 +33,10 @@ class WebSocketServer {
           this.handleMessage(ws, message);
         } catch (error) {
           console.error("Invalid WebSocket message:", error);
-          ws.send(
-            JSON.stringify({
-              op: "error",
-              d: { message: "Invalid message format" },
-            })
-          );
+          this.sendSafe(ws, {
+            op: "error",
+            d: { message: "Invalid message format" },
+          });
         }
       });
 
@@ -41,18 +50,39 @@ class WebSocketServer {
       });
 
       // Send welcome message
-      ws.send(
-        JSON.stringify({
-          op: "hello",
-          d: {
-            heartbeat_interval: 30000,
-            message: "Connected to Grux WebSocket",
-          },
-        })
-      );
+      this.sendSafe(ws, {
+        op: "hello",
+        d: {
+          heartbeat_interval: 30000,
+          message: "Connected to Grux WebSocket",
+        },
+      });
     });
 
+    // Heartbeat para detectar conexões mortas
+    this.heartbeatInterval = setInterval(() => {
+      this.wss.clients.forEach((ws) => {
+        if (ws.isAlive === false) {
+          console.log("Terminating dead connection");
+          return ws.terminate();
+        }
+
+        ws.isAlive = false;
+        ws.ping();
+      });
+    }, 30000);
+
     console.log("WebSocket server initialized");
+  }
+
+  sendSafe(ws, data) {
+    if (ws.readyState === WebSocket.OPEN) {
+      try {
+        ws.send(JSON.stringify(data));
+      } catch (error) {
+        console.error("Error sending WebSocket message:", error);
+      }
+    }
   }
 
   handleMessage(ws, message) {
@@ -63,12 +93,10 @@ class WebSocketServer {
         if (d && d.user_id) {
           this.subscribeUser(ws, d.user_id);
         } else {
-          ws.send(
-            JSON.stringify({
-              op: "error",
-              d: { message: "user_id is required for subscribe" },
-            })
-          );
+          this.sendSafe(ws, {
+            op: "error",
+            d: { message: "user_id is required for subscribe" },
+          });
         }
         break;
 
@@ -79,16 +107,14 @@ class WebSocketServer {
         break;
 
       case "heartbeat":
-        ws.send(JSON.stringify({ op: "heartbeat_ack" }));
+        this.sendSafe(ws, { op: "heartbeat_ack" });
         break;
 
       default:
-        ws.send(
-          JSON.stringify({
-            op: "error",
-            d: { message: "Unknown operation" },
-          })
-        );
+        this.sendSafe(ws, {
+          op: "error",
+          d: { message: "Unknown operation" },
+        });
     }
   }
 
@@ -99,15 +125,13 @@ class WebSocketServer {
 
     this.subscribedUsers.get(userId).add(ws);
 
-    ws.send(
-      JSON.stringify({
-        op: "subscribed",
-        d: {
-          user_id: userId,
-          message: `Subscribed to receive presence updates for user ${userId}`,
-        },
-      })
-    );
+    this.sendSafe(ws, {
+      op: "subscribed",
+      d: {
+        user_id: userId,
+        message: `Subscribed to receive presence updates for user ${userId}`,
+      },
+    });
 
     console.log(`WebSocket subscribed to user: ${userId}`);
   }
@@ -120,12 +144,10 @@ class WebSocketServer {
         this.subscribedUsers.delete(userId);
       }
 
-      ws.send(
-        JSON.stringify({
-          op: "unsubscribed",
-          d: { user_id: userId },
-        })
-      );
+      this.sendSafe(ws, {
+        op: "unsubscribed",
+        d: { user_id: userId },
+      });
     }
   }
 
@@ -155,19 +177,24 @@ class WebSocketServer {
     };
 
     const connections = this.subscribedUsers.get(userId);
-    const message = JSON.stringify(data);
+    const deadConnections = [];
 
     connections.forEach((ws) => {
       if (ws.readyState === WebSocket.OPEN) {
-        ws.send(message);
+        this.sendSafe(ws, data);
       } else {
-        connections.delete(ws);
+        deadConnections.push(ws);
       }
     });
 
-    console.log(
-      `Sent presence update to ${connections.size} client(s) for user: ${userId}`
-    );
+    // Remover conexões mortas
+    deadConnections.forEach((ws) => connections.delete(ws));
+
+    if (connections.size > 0) {
+      console.log(
+        `Sent presence update to ${connections.size} client(s) for user: ${userId}`
+      );
+    }
   }
 
   getStats() {
@@ -179,6 +206,15 @@ class WebSocketServer {
         0
       ),
     };
+  }
+
+  destroy() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+    }
+    if (this.wss) {
+      this.wss.close();
+    }
   }
 }
 
