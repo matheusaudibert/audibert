@@ -137,7 +137,7 @@ const processClan = (clanData) => {
 
 const processProfileInfo = (member, userData) => {
   const nameplate_image = userData?.nameplate?.asset
-    ? `https://cdn.discordapp.com/assets/collectibles/${userData.nameplate.asset}/static.png`
+    ? `https://cdn.discordapp.com/assets/collectibles/${userData.nameplate.asset}static.png`
     : null;
 
   return {
@@ -185,7 +185,9 @@ const processSpotifyActivity = (activities) => {
           "spotify:",
           "https://i.scdn.co/image/"
         ) || null,
-      link: `https://open.spotify.com/track/${activity.syncId}` || null,
+      link: activity.syncId
+        ? `https://open.spotify.com/track/${activity.syncId}`
+        : null,
       timestamps: {
         start: activity.timestamps?.start
           ? new Date(activity.timestamps.start).getTime()
@@ -194,6 +196,9 @@ const processSpotifyActivity = (activities) => {
           ? new Date(activity.timestamps.end).getTime()
           : null,
       },
+      created_at: activity.createdTimestamp
+        ? new Date(activity.createdTimestamp).getTime()
+        : null,
     }));
   return spotifyActivity.length > 0 ? spotifyActivity[0] : null;
 };
@@ -221,6 +226,9 @@ const processGeneralActivities = (activities) => {
           ? new Date(activity.timestamps.start).getTime()
           : null,
       },
+      created_at: activity.createdTimestamp
+        ? new Date(activity.createdTimestamp).getTime()
+        : null,
     }));
   return generalActivities.length > 0 ? generalActivities.reverse() : null;
 };
