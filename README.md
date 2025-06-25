@@ -172,6 +172,8 @@ Make sure your request is meaningful and you have tested the app locally before 
 
 _If you're using this repo, feel free to show support and give this repo a ⭐ star! It means a lot, thank you :)_
 
-```
+## Extra
 
-```
+The first version of this API was built in a video:
+
+[![YouTube Card](https://ytcards.audibert.dev/api/3sJCXoxgbHQ?width=250&theme=github&max_title_lines=1&show_duration=false)](https://youtube.com/watch?v=3sJCXoxgbHQ)
