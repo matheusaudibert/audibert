@@ -1,18 +1,22 @@
 const express = require("express");
 const cors = require("cors");
+const http = require("http");
 const { MongoClient } = require("mongodb");
 const config = require("./config/config");
 const client = require("./services/discordClient");
+const websocketServer = require("./services/websocketServer");
 const userRoutes = require("./routes/userRoutes");
 const activityRoutes = require("./routes/quickRoutes/activityRoutes");
 
 const app = express();
+const server = http.createServer(app);
 const PORT = config.PORT;
 
 app.use(cors());
 app.use(express.json());
 
-// Rota padrão
+websocketServer.initialize(server);
+
 app.get("/", async (req, res) => {
   try {
     const mainGuild = await client.guilds.fetch(config.MAIN_GUILD);
@@ -21,11 +25,14 @@ app.get("/", async (req, res) => {
       (member) => !member.user.bot
     ).size;
 
+    const wsStats = websocketServer.getStats();
+
     res.json({
       data: {
         info: "Grux provides Discord presences as an API. Find out more here: https://github.com/matheusaudibert/grux",
         discord_invite: "https://discord.gg/gu7sKjwEz5",
         monitored_user_count: humanMemberCount,
+        websocket_stats: wsStats,
       },
       success: true,
     });
@@ -44,10 +51,11 @@ app.get("/", async (req, res) => {
 app.use("/user", userRoutes);
 app.use("/activity", activityRoutes);
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(
     `API running on http://localhost:${PORT}/user/1274150219482660897`
   );
+  console.log(`WebSocket server running on ws://localhost:${PORT}`);
 });
 
 app.use("*", (req, res) => {

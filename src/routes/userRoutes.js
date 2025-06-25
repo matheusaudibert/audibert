@@ -39,7 +39,6 @@ router.get("/:id", async (req, res) => {
       );
     }
 
-    // Verifica cache para campos específicos
     let cachedFields = getCachedFields(USER_ID);
 
     if (!cachedFields) {
@@ -70,7 +69,6 @@ router.get("/:id", async (req, res) => {
         );
       }
 
-      // Extrai e cacheia apenas os campos específicos
       cachedFields = {
         badges: userData.badges || [],
         nameplate: userData.nameplate || null,
@@ -81,7 +79,6 @@ router.get("/:id", async (req, res) => {
       setCachedFields(USER_ID, cachedFields);
     }
 
-    // Cria userData simulado com campos cacheados
     const userData = {
       badges: cachedFields.badges,
       nameplate: cachedFields.nameplate,

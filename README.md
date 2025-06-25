@@ -123,6 +123,149 @@ If you only need activity and status information without cached profile data, us
 }
 ```
 
+## WebSocket API (Real-time Updates)
+
+For real-time presence updates, connect to our WebSocket endpoint:
+
+`wss://grux.audibert.dev` (for SSL in production)
+
+### WebSocket Events
+
+#### 1. Connection
+
+```js
+// Send when client connects
+{
+  "op": "hello",
+  "d": {
+    "heartbeat_interval": 30000,
+    "message": "Connected to Grux WebSocket"
+  }
+}
+```
+
+#### 2. Subscribe to a user
+
+```js
+// Send this to start receiving updates for a user
+{
+  "op": "subscribe",
+  "d": {
+    "user_id": "1274150219482660897"
+  }
+}
+
+// Response
+{
+  "op": "subscribed",
+  "d": {
+    "user_id": "1274150219482660897",
+    "message": "Subscribed to receive presence updates for user 1274150219482660897"
+  }
+}
+```
+
+#### 3. Receive presence updates
+
+```js
+// Automatic when user's presence changes
+{
+  "op": "presence_update",
+  "d": {
+    "user_id": "1274150219482660897",
+    "status": "online",
+    "spotify": {
+      "type": "Listening to Spotify",
+      "name": "Spotify",
+      "song": "Song Name",
+      "artist": "Artist Name",
+      "album": "Album Name",
+      "album_image": "https://i.scdn.co/image/...",
+      "link": "https://open.spotify.com/track/...",
+      "timestamps": {
+        "start": 1750726516133,
+        "end": 1750726716133
+      }
+    },
+    "activity": [
+      {
+        "type": "Playing",
+        "name": "Visual Studio Code",
+        "state": "Workspace: grux",
+        "details": "Editing app.js",
+        "largeText": "Editing a JS file",
+        "largeImage": "https://cdn.discordapp.com/app-assets/383226320970055681/1359299016025964687.png",
+        "smallText": "Visual Studio Code",
+        "smallImage": "https://cdn.discordapp.com/app-assets/383226320970055681/1359299466493956258.png",
+        "timestamps": {
+          "start": 1750726516133
+        }
+      }
+    ],
+    "timestamp": 1750726516133
+  }
+}
+```
+
+#### 4. Unsubscribe from a user
+
+```js
+{
+  "op": "unsubscribe",
+  "d": {
+    "user_id": "1274150219482660897"
+  }
+}
+```
+
+#### 5. Heartbeat (keep connection alive)
+
+```js
+// Send every 30 seconds
+{
+  "op": "heartbeat"
+}
+
+// Response
+{
+  "op": "heartbeat_ack"
+}
+```
+
+### WebSocket Example (JavaScript)
+
+```js
+// For production (Squad Cloud)
+const ws = new WebSocket('wss://grux.audibert.dev');
+
+// For local development
+// const ws = new WebSocket('ws://localhost:10000');
+
+ws.onopen = () => {
+  // Subscribe to a user
+  ws.send(JSON.stringify({
+    op: 'subscribe',
+    d: { user_id: '1274150219482660897' }
+  }));
+};
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+
+  if (data.op === 'presence_update') {
+    console.log('User presence updated:', data.d);
+    // Update your UI here
+  }
+};
+
+// Keep connection alive
+setInterval(() => {
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ op: 'heartbeat' }));
+  }
+}, 30000);
+```
+
 ## Contribuition
 
 Contributions are welcome! Feel free to open an issue or submit a pull request if you have a way to improve this project.
