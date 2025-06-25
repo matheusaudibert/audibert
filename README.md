@@ -1,6 +1,6 @@
 # Grux API
 
-Grux is aservice that makes it easy to access Discord profile and presence informations through a RESTful API `(grux.audibert.dev/user/:userid)`. Perfect for displaying your Discord profile, badges, status, activities, and server information on your website or application.
+Grux is a service that makes it easy to access Discord profile and presence informations through a RESTful API `(grux.audibert.dev/user/:userid)` and WebSocket (see below). Perfect for displaying your Discord profile, badges, status, activities, and server information on your website or application.
 
 ## Get Started
 
@@ -21,7 +21,7 @@ That's all you need to do!
 > [!NOTE]
 > This endpoint has a 5-minute cache for profile fields (nameplate, badges, clan, connected_accounts) to improve performance and avoid limits.
 
-```js
+```json
 {
   "data": {
     "profile": {
@@ -35,7 +35,7 @@ That's all you need to do!
       "avatar": "6c9747063de19030c95daa80c1ca61c7",
       "avatar_image": "https://cdn.discordapp.com/avatars/1274150219482660897/6c9747063de19030c95daa80c1ca61c7.png?size=1024",
       "avatar_decoration_image": null,
-      "nameplate_image": "https://cdn.discordapp.com/assets/collectibles/nameplates/nameplates/twilight//static.png",
+      "nameplate_image": "https://cdn.discordapp.com/assets/collectibles/nameplates/nameplates/twilight/static.png",
       "badges": [
         {
           "id": "active_developer",
@@ -71,7 +71,20 @@ That's all you need to do!
       ]
     },
     "status": "online",
-    "spotify": null,
+    "spotify": {
+      "type": "Listening to Spotify",
+      "name": "Spotify",
+      "song": "90mph",
+      "artist": "JBEE, Sillage",
+      "album": "90mph",
+      "album_image": "https://i.scdn.co/image/ab67616d0000b2737aee7c56bd63016a79ddc9d1",
+      "link": "https://open.spotify.com/track/6uT2TsDrCrXue7ROEfNeGN",
+      "timestamps": {
+        "start": 1750873861045,
+        "end": 1750874008612
+      },
+      "created_at": 1750873861499
+    },
     "activity": [
       {
         "type": "Playing",
@@ -83,8 +96,9 @@ That's all you need to do!
         "smallText": "Visual Studio Code",
         "smallImage": "https://cdn.discordapp.com/app-assets/383226320970055681/1359299466493956258.png",
         "timestamps": {
-          "start": 1750726516133
-        }
+          "start": 1750865485922
+        },
+        "created_at": 1750873791410
       }
     ]
   },
@@ -98,173 +112,55 @@ If you only need activity and status information without cached profile data, us
 
 `GET grux.audibert.dev/activity/:userid`
 
-```js
+```json
 {
   "data": {
     "status": "online",
-    "spotify": null,
-    "activity": [
-      {
-        "type": "Playing",
-        "name": "Visual Studio Code",
-        "state": "Workspace: embeds",
-        "details": "Editing welcome.js",
-        "largeText": "Editing a JS file",
-        "largeImage": "https://cdn.discordapp.com/app-assets/383226320970055681/1359299016025964687.png",
-        "smallText": "Visual Studio Code",
-        "smallImage": "https://cdn.discordapp.com/app-assets/383226320970055681/1359299466493956258.png",
-        "timestamps": {
-          "start": 1750721680869
-        }
-      }
-    ]
-  },
+    "spotify": /* spotify data */,
+    "activity": /* activity data */},
   "success": true
 }
 ```
 
-## WebSocket API (Real-time Updates)
+## WeSocket Docs
 
-For real-time presence updates, connect to our WebSocket endpoint:
+### Connecting to the WebSocket
 
-`wss://grux.audibert.dev` (for SSL in production)
+`wss://grux.audibert.dev?user_id=:userid`
 
-### WebSocket Events
+### Initial data
 
-#### 1. Connection
+Sent once when the connection is established. Contains full profile, status, activity, and Spotify data.
 
-```js
-// Send when client connects
+```json
 {
-  "op": "hello",
+  "op": "initial_data",
   "d": {
-    "heartbeat_interval": 30000,
-    "message": "Connected to Grux WebSocket"
+    "profile": { /* profile data */ },
+    "status": /* online, dnd, idle or invisible */,
+    "spotify": { /* spotify data */ },
+    "activity": [ /* activity data */ ]
   }
 }
 ```
 
-#### 2. Subscribe to a user
+### Presence Update
 
-```js
-// Send this to start receiving updates for a user
-{
-  "op": "subscribe",
-  "d": {
-    "user_id": "1274150219482660897"
-  }
-}
+Sent automatically whenever the user's activity or status changes.
 
-// Response
-{
-  "op": "subscribed",
-  "d": {
-    "user_id": "1274150219482660897",
-    "message": "Subscribed to receive presence updates for user 1274150219482660897"
-  }
-}
-```
-
-#### 3. Receive presence updates
-
-```js
-// Automatic when user's presence changes
+```json
 {
   "op": "presence_update",
   "d": {
-    "user_id": "1274150219482660897",
-    "status": "online",
-    "spotify": {
-      "type": "Listening to Spotify",
-      "name": "Spotify",
-      "song": "Song Name",
-      "artist": "Artist Name",
-      "album": "Album Name",
-      "album_image": "https://i.scdn.co/image/...",
-      "link": "https://open.spotify.com/track/...",
-      "timestamps": {
-        "start": 1750726516133,
-        "end": 1750726716133
-      }
-    },
-    "activity": [
-      {
-        "type": "Playing",
-        "name": "Visual Studio Code",
-        "state": "Workspace: grux",
-        "details": "Editing app.js",
-        "largeText": "Editing a JS file",
-        "largeImage": "https://cdn.discordapp.com/app-assets/383226320970055681/1359299016025964687.png",
-        "smallText": "Visual Studio Code",
-        "smallImage": "https://cdn.discordapp.com/app-assets/383226320970055681/1359299466493956258.png",
-        "timestamps": {
-          "start": 1750726516133
-        }
-      }
-    ],
-    "timestamp": 1750726516133
+    "status": /* online, dnd, idle or invisible */,
+    "spotify": { /* updated Spotify info */ },
+    "activity": [ /* updated activities */ ],
   }
 }
 ```
 
-#### 4. Unsubscribe from a user
-
-```js
-{
-  "op": "unsubscribe",
-  "d": {
-    "user_id": "1274150219482660897"
-  }
-}
-```
-
-#### 5. Heartbeat (keep connection alive)
-
-```js
-// Send every 30 seconds
-{
-  "op": "heartbeat"
-}
-
-// Response
-{
-  "op": "heartbeat_ack"
-}
-```
-
-### WebSocket Example (JavaScript)
-
-```js
-// For production (Squad Cloud)
-const ws = new WebSocket('wss://grux.audibert.dev');
-
-// For local development
-// const ws = new WebSocket('ws://localhost:10000');
-
-ws.onopen = () => {
-  // Subscribe to a user
-  ws.send(JSON.stringify({
-    op: 'subscribe',
-    d: { user_id: '1274150219482660897' }
-  }));
-};
-
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-
-  if (data.op === 'presence_update') {
-    console.log('User presence updated:', data.d);
-    // Update your UI here
-  }
-};
-
-// Keep connection alive
-setInterval(() => {
-  if (ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ op: 'heartbeat' }));
-  }
-}, 30000);
-```
+> ![NOTE]
+> The connection does not require any manual heartbeat, the server handles all that internally.
 
 ## Contribuition
 
@@ -275,3 +171,7 @@ Make sure your request is meaningful and you have tested the app locally before 
 ## Support
 
 _If you're using this repo, feel free to show support and give this repo a ⭐ star! It means a lot, thank you :)_
+
+```
+
+```

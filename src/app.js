@@ -1,7 +1,6 @@
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
-const { MongoClient } = require("mongodb");
 const config = require("./config/config");
 const client = require("./services/discordClient");
 const websocketServer = require("./services/websocketServer");
@@ -32,7 +31,6 @@ app.get("/", async (req, res) => {
         info: "Grux provides Discord presences as an API. Find out more here: https://github.com/matheusaudibert/grux",
         discord_invite: "https://discord.gg/gu7sKjwEz5",
         monitored_user_count: humanMemberCount,
-        websocket_stats: wsStats,
       },
       success: true,
     });

@@ -163,6 +163,7 @@ const processProfileInfo = (member, userData) => {
       ? `https://cdn.discordapp.com/avatar-decoration-presets/${member.user.avatarDecorationData.asset}.png`
       : null,
     nameplate_image,
+    public_flags: member.user.flags.bitfield,
     badges: processBadges(userData.badges),
     clan: processClan(userData.clan),
     connected_accounts: processConnectedAccounts(

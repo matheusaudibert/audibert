@@ -1,180 +1,139 @@
 const WebSocket = require("ws");
-const {
-  processSpotifyActivity,
-  processGeneralActivities,
-} = require("../utils/jsonProcessor");
+const {} = require("../utils/jsonProcessor");
 
 class WebSocketServer {
   constructor() {
     this.wss = null;
-    this.subscribedUsers = new Map(); // userID -> Set of WebSocket connections
+    this.connectedUsers = new Map();
   }
 
   initialize(server) {
     this.wss = new WebSocket.Server({ server });
 
-    this.wss.on("connection", (ws) => {
+    this.wss.on("connection", (ws, req) => {
       console.log("New WebSocket connection established");
 
-      ws.on("message", (data) => {
-        try {
-          const message = JSON.parse(data);
-          this.handleMessage(ws, message);
-        } catch (error) {
-          console.error("Invalid WebSocket message:", error);
-          ws.send(
-            JSON.stringify({
-              op: "error",
-              d: { message: "Invalid message format" },
-            })
-          );
-        }
-      });
+      // Extrair user ID da URL
+      const url = new URL(req.url, `http://${req.headers.host}`);
+      const userId = url.searchParams.get("user_id");
+
+      if (!userId) {
+        ws.send(
+          JSON.stringify({
+            op: "error",
+            d: { message: "user_id parameter is required" },
+          })
+        );
+        ws.close();
+        return;
+      }
+
+      if (!this.connectedUsers.has(userId)) {
+        this.connectedUsers.set(userId, new Set());
+      }
+      this.connectedUsers.get(userId).add(ws);
+
+      this.sendInitialData(ws, userId);
 
       ws.on("close", () => {
-        this.unsubscribeAllUsers(ws);
+        this.removeConnection(ws, userId);
         console.log("WebSocket connection closed");
       });
 
       ws.on("error", (error) => {
         console.error("WebSocket error:", error);
       });
-
-      // Send welcome message
-      ws.send(
-        JSON.stringify({
-          op: "hello",
-          d: {
-            heartbeat_interval: 30000,
-            message: "Connected to Grux WebSocket",
-          },
-        })
-      );
     });
 
     console.log("WebSocket server initialized");
   }
 
-  handleMessage(ws, message) {
-    const { op, d } = message;
+  async sendInitialData(ws, userId) {
+    try {
+      const response = await fetch(`https://grux.audibert.dev/user/${userId}`);
+      const data = await response.json();
 
-    switch (op) {
-      case "subscribe":
-        if (d && d.user_id) {
-          this.subscribeUser(ws, d.user_id);
-        } else {
-          ws.send(
-            JSON.stringify({
-              op: "error",
-              d: { message: "user_id is required for subscribe" },
-            })
-          );
-        }
-        break;
-
-      case "unsubscribe":
-        if (d && d.user_id) {
-          this.unsubscribeUser(ws, d.user_id);
-        }
-        break;
-
-      case "heartbeat":
-        ws.send(JSON.stringify({ op: "heartbeat_ack" }));
-        break;
-
-      default:
+      if (data.success) {
+        ws.send(
+          JSON.stringify({
+            op: "initial_data",
+            d: data.data,
+          })
+        );
+      } else {
         ws.send(
           JSON.stringify({
             op: "error",
-            d: { message: "Unknown operation" },
+            d: { message: "User not found or not monitored" },
           })
         );
-    }
-  }
-
-  subscribeUser(ws, userId) {
-    if (!this.subscribedUsers.has(userId)) {
-      this.subscribedUsers.set(userId, new Set());
-    }
-
-    this.subscribedUsers.get(userId).add(ws);
-
-    ws.send(
-      JSON.stringify({
-        op: "subscribed",
-        d: {
-          user_id: userId,
-          message: `Subscribed to receive presence updates for user ${userId}`,
-        },
-      })
-    );
-
-    console.log(`WebSocket subscribed to user: ${userId}`);
-  }
-
-  unsubscribeUser(ws, userId) {
-    if (this.subscribedUsers.has(userId)) {
-      this.subscribedUsers.get(userId).delete(ws);
-
-      if (this.subscribedUsers.get(userId).size === 0) {
-        this.subscribedUsers.delete(userId);
+        ws.close();
       }
-
+    } catch (error) {
+      console.error("Error fetching initial data:", error);
       ws.send(
         JSON.stringify({
-          op: "unsubscribed",
-          d: { user_id: userId },
+          op: "error",
+          d: { message: "Failed to fetch user data" },
         })
       );
+      ws.close();
     }
   }
 
-  unsubscribeAllUsers(ws) {
-    for (const [userId, connections] of this.subscribedUsers.entries()) {
-      connections.delete(ws);
-      if (connections.size === 0) {
-        this.subscribedUsers.delete(userId);
+  removeConnection(ws, userId) {
+    if (this.connectedUsers.has(userId)) {
+      this.connectedUsers.get(userId).delete(ws);
+      if (this.connectedUsers.get(userId).size === 0) {
+        this.connectedUsers.delete(userId);
       }
     }
   }
 
   broadcastPresenceUpdate(userId, status, spotifyActivity, generalActivity) {
-    if (!this.subscribedUsers.has(userId)) {
+    if (!this.connectedUsers.has(userId)) {
       return;
     }
 
     const data = {
       op: "presence_update",
       d: {
-        user_id: userId,
         status,
         spotify: spotifyActivity,
         activity: generalActivity,
-        timestamp: Date.now(),
       },
     };
 
-    const connections = this.subscribedUsers.get(userId);
-    const message = JSON.stringify(data);
+    const connections = this.connectedUsers.get(userId);
+    const deadConnections = [];
 
     connections.forEach((ws) => {
       if (ws.readyState === WebSocket.OPEN) {
-        ws.send(message);
+        try {
+          ws.send(JSON.stringify(data));
+        } catch (error) {
+          console.error("Error sending message:", error);
+          deadConnections.push(ws);
+        }
       } else {
-        connections.delete(ws);
+        deadConnections.push(ws);
       }
     });
 
-    console.log(
-      `Sent presence update to ${connections.size} client(s) for user: ${userId}`
-    );
+    deadConnections.forEach((ws) => connections.delete(ws));
+
+    if (connections.size > 0) {
+      console.log(
+        `Sent presence update to ${connections.size} client(s) for user: ${userId}`
+      );
+    }
   }
 
   getStats() {
     return {
       total_connections: this.wss ? this.wss.clients.size : 0,
-      subscribed_users: this.subscribedUsers.size,
-      total_subscriptions: Array.from(this.subscribedUsers.values()).reduce(
+      connected_users: this.connectedUsers.size,
+      total_user_connections: Array.from(this.connectedUsers.values()).reduce(
         (total, connections) => total + connections.size,
         0
       ),
