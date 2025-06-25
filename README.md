@@ -159,7 +159,7 @@ Sent automatically whenever the user's activity or status changes.
 }
 ```
 
-> ![NOTE]
+> [!NOTE]
 > The connection does not require any manual heartbeat, the server handles all that internally.
 
 ## Contribuition
