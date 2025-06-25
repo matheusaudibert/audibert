@@ -29,7 +29,7 @@ client.once("ready", () => {
 
   setInterval(() => {
     checkAllPresences();
-  }, 30000);
+  }, 3000);
 });
 
 function checkAllPresences() {
