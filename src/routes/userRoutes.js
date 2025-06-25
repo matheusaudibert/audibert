@@ -91,7 +91,6 @@ router.get("/:id", async (req, res) => {
 
     const profileInfo = processProfileInfo(member, userData);
     const activities = member.presence?.activities || [];
-    console.log("Activities:", activities);
     const spotifyActivity = processSpotifyActivity(activities);
     const generalActivity = processGeneralActivities(activities);
 
